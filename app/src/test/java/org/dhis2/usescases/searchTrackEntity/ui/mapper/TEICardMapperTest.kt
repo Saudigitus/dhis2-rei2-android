@@ -6,6 +6,7 @@ import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
+import org.dhis2.usescases.searchTrackEntity.utils.ReiSearchTeiStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -25,6 +26,7 @@ class TEICardMapperTest {
 
     private val context: Context = mock()
     private val resourceManager: ResourceManager = mock()
+    private val searchTeiStyle: ReiSearchTeiStyle = mock()
     private val currentDate = Date()
 
     private lateinit var mapper: TEICardMapper
@@ -44,7 +46,7 @@ class TEICardMapperTest {
         ) doReturn "Today"
         whenever(resourceManager.getString(R.string.marked_follow_up)) doReturn "Marked for follow-up"
 
-        mapper = TEICardMapper(context, resourceManager)
+        mapper = TEICardMapper(context, resourceManager, searchTeiStyle)
     }
 
     @Test

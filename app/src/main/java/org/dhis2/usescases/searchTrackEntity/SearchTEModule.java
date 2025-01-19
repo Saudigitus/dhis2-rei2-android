@@ -65,6 +65,7 @@ import org.dhis2.tracker.data.ProfilePictureProvider;
 import org.dhis2.ui.ThemeManager;
 import org.dhis2.usescases.events.EventInfoProvider;
 import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper;
+import org.dhis2.usescases.searchTrackEntity.utils.ReiSearchTeiStyle;
 import org.dhis2.usescases.tracker.TrackedEntityInstanceInfoProvider;
 import org.dhis2.utils.analytics.AnalyticsHelper;
 import org.hisp.dhis.android.core.D2;
@@ -370,11 +371,19 @@ public class SearchTEModule {
 
     @Provides
     @PerActivity
+    ReiSearchTeiStyle provideSearchTeiStyle(D2 d2) {
+        return new ReiSearchTeiStyle(d2);
+    }
+
+
+    @Provides
+    @PerActivity
     TEICardMapper provideListCardMapper(
             Context context,
-            ResourceManager resourceManager
+            ResourceManager resourceManager,
+            ReiSearchTeiStyle searchTeiStyle
     ) {
-        return new TEICardMapper(context, resourceManager);
+        return new TEICardMapper(context, resourceManager, searchTeiStyle);
     }
 
     @Provides

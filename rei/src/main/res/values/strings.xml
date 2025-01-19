@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="effective">Efectivados</string>
+    <string name="pending">Pendentes</string>
+    <string name="late">Atrasados</string>
+    <string name="overdue">Atrasado</string>
+    <string name="vaccinated">Vacinado</string>
+    <string name="not_vaccinated">Zero dose</string>
+    <string name="back">Back</string>
+    <string name="filter">Filters</string>
+    <string name="patients">Pacientes</string>
+    <string name="sync_offline_check_connection">You\'re currently offline. Please check your internet connection to continue syncing.</string>
+</resources>

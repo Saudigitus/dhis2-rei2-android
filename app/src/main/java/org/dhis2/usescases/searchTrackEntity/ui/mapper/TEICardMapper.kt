@@ -23,6 +23,7 @@ import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
+import org.dhis2.usescases.searchTrackEntity.utils.ReiSearchTeiStyle
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -42,6 +43,7 @@ import java.util.Date
 class TEICardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
+    private val searchTeiStyle: ReiSearchTeiStyle,
 ) {
 
     fun map(
@@ -50,14 +52,18 @@ class TEICardMapper(
         onCardClick: () -> Unit,
         onImageClick: (String) -> Unit,
     ): ListCardUiModel {
+        val style = searchTeiStyle.getTeiCardBackground(searchTEIModel)
+
         return ListCardUiModel(
             avatar = { ProvideAvatar(searchTEIModel, onImageClick) },
+            background = style.second,
             title = getTitle(searchTEIModel),
             lastUpdated = searchTEIModel.tei.lastUpdated().toDateSpan(context),
             additionalInfo = getAdditionalInfoList(searchTEIModel),
             actionButton = { ProvideSyncButton(searchTEIModel, onSyncIconClick) },
             expandLabelText = resourceManager.getString(R.string.show_more),
             shrinkLabelText = resourceManager.getString(R.string.show_less),
+            status = context.getString(style.first),
             onCardCLick = onCardClick,
         )
     }
