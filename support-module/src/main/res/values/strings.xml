@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">ViewTest</string>
+    <string name="manuals">Manuais</string>
+    <string name="support">Suporte</string>
+    <string name="manual_title">Manuais de Utilizadores</string>
+    <string name="support_menu_label">Suporte ao utilizador</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="support_view_title">Suporte ao utilizador</string>
+    <string name="sync_errord">Relatar erros de sincronização</string>
+    <string name="other_errors">Relatar outros erros</string>
+    <string name="support_view_subtitle">Selecione o tipo de erro que pretende relatar para o suporte.</string>
+    <string name="user_manual_title">Manual do Utilizador</string>
+    <string name="fk_message">Missing %s %s from %s %s</string>
+    <string name="sync_errors_view_title">Relatar erros de sincronização</string>
+    <string name="sync_errors">Erros de sincronização</string>
+    <string name="general_errors_view_title">Relatar outros erros</string>
+    <string name="fab_send_lb">Enviar</string>
+    <string name="general_errors_view_lb">Descreva com detalhes o erro decorrido com passos para que a equipa possa reproduzir</string>
+    <string name="textarea_label">Descrição do erro</string>
+</resources>

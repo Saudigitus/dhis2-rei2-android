@@ -78,12 +78,14 @@ import org.hisp.dhis.android.core.organisationunit.OrganisationUnit
 import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.saudigitus.rei.navigator.LineListingComponentProvider
 import timber.log.Timber
 import java.io.Serializable
 import java.util.Date
 import javax.inject.Inject
 
-class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View {
+class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View,
+    LineListingComponentProvider {
 
     private lateinit var binding: ActivitySearchBinding
     private lateinit var searchScreenConfigurator: SearchScreenConfigurator
@@ -776,6 +778,15 @@ class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View 
                 BaseTransientBottomBar.LENGTH_SHORT,
             ).show()
         }
+    }
+
+    override fun launch(context: Context, bundle: Bundle): Intent {
+        val intent = Intent(
+            context,
+            SearchTEActivity::class.java,
+        )
+        intent.putExtras(bundle)
+        return intent
     }
 
     companion object {

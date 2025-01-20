@@ -12,6 +12,7 @@ import org.dhis2.usescases.main.program.ProgramUiModel
 import org.dhis2.usescases.programEventDetail.ProgramEventDetailActivity
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity
 import org.hisp.dhis.android.core.program.ProgramType
+import org.saudigitus.rei.ReiActivity
 
 sealed class HomeItemData(
     open val uid: String,
@@ -24,6 +25,7 @@ sealed class HomeItemData(
         override val accessDataWrite: Boolean,
         val trackedEntityType: String,
         val stockConfig: AppConfig?,
+        val isRei: Boolean,
     ) : HomeItemData(uid, label, accessDataWrite)
 
     data class EventProgram(
@@ -55,6 +57,7 @@ fun ProgramUiModel.toHomeItemData(): HomeItemData {
                 accessDataWrite,
                 type!!,
                 stockConfig,
+                isRei
             )
 
         else -> HomeItemData.DataSet(
@@ -94,7 +97,13 @@ fun ActivityResultLauncher<Intent>.navigateTo(context: Context, homeItemData: Ho
             }
 
         is HomeItemData.TrackerProgram -> {
-            if (homeItemData.stockConfig != null) {
+            if (homeItemData.isRei) {
+                bundle.putString(Constants.TRACKED_ENTITY_UID, homeItemData.trackedEntityType)
+                Intent(context, ReiActivity::class.java).apply {
+                    putExtras(bundle)
+                    launch(this)
+                }
+            } else if (homeItemData.stockConfig != null) {
                 Intent(context, HomeActivity::class.java).apply {
                     putExtra(
                         org.dhis2.android.rtsm.commons.Constants.INTENT_EXTRA_APP_CONFIG,

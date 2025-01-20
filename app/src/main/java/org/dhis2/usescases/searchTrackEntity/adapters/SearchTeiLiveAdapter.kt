@@ -3,12 +3,22 @@ package org.dhis2.usescases.searchTrackEntity.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -21,6 +31,7 @@ import org.dhis2.usescases.searchTrackEntity.ui.mapper.TEICardMapper
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.hisp.dhis.mobile.ui.designsystem.theme.Spacing
+import org.saudigitus.rei.utils.TeiListCardBox
 
 class SearchTeiLiveAdapter(
     private val fromRelationship: Boolean,
@@ -87,6 +98,13 @@ class SearchTeiLiveAdapter(
                     materialCardView.visibility = View.GONE
                     val composeView = holder.itemView.findViewById<ComposeView>(R.id.composeView)
                     composeView.setContent {
+                        var cardSize by remember { mutableStateOf(Size.Zero) }
+                        val density = LocalDensity.current
+
+                        // Dp values that will be used for Modifier.size()
+                        var cardWidthDp by remember { mutableStateOf(0.dp) }
+                        var cardHeightDp by remember { mutableStateOf(0.dp) }
+
                         val card = cardMapper.map(
                             searchTEIModel = it,
                             onSyncIconClick = {
@@ -121,16 +139,31 @@ class SearchTeiLiveAdapter(
                             if (position == 0) {
                                 Spacer(modifier = Modifier.size(Spacing.Spacing8))
                             }
-                            ListCard(
-                                listAvatar = card.avatar,
-                                title = ListCardTitleModel(text = card.title),
-                                lastUpdated = card.lastUpdated,
-                                additionalInfoList = card.additionalInfo,
-                                actionButton = card.actionButton,
-                                expandLabelText = card.expandLabelText,
-                                shrinkLabelText = card.shrinkLabelText,
-                                onCardClick = card.onCardCLick,
-                            )
+                            TeiListCardBox(
+                                modifier = if (card.background != null) {
+                                    Modifier.size(cardWidthDp, cardHeightDp)
+                                        .background(color = card.background!!)
+                                } else {
+                                    Modifier
+                                },
+                            ) {
+                                ListCard(
+                                    modifier = Modifier.onGloballyPositioned { coordinates ->
+                                        cardSize = coordinates.size.toSize()
+
+                                        cardWidthDp = with(density) { cardSize.width.toDp() }
+                                        cardHeightDp = with(density) { cardSize.height.toDp() }
+                                    },
+                                    listAvatar = card.avatar,
+                                    title = ListCardTitleModel(text = card.title),
+                                    lastUpdated = card.lastUpdated,
+                                    additionalInfoList = card.additionalInfo,
+                                    actionButton = card.actionButton,
+                                    expandLabelText = card.expandLabelText,
+                                    shrinkLabelText = card.shrinkLabelText,
+                                    onCardClick = card.onCardCLick,
+                                )
+                            }
                         }
                     }
                 }
