@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Status(
+    @JsonProperty("key")
+    val key: String,
     @JsonProperty("color")
     val color: String,
     @JsonProperty("label")

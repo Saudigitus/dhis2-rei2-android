@@ -16,6 +16,7 @@ import org.hisp.dhis.android.core.program.Program
 import org.hisp.dhis.android.core.program.ProgramType.WITHOUT_REGISTRATION
 import org.hisp.dhis.android.core.program.ProgramType.WITH_REGISTRATION
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.saudigitus.rei.utils.isRei
 
 internal class ProgramRepositoryImpl(
     private val d2: D2,
@@ -114,6 +115,7 @@ internal class ProgramRepositoryImpl(
                     } else {
                         null
                     },
+                    isRei = d2.isRei(program.uid())
                 )
             }.toList().toFlowable().blockingFirst()
     }

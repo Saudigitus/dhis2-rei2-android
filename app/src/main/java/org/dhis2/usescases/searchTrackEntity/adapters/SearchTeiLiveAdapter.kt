@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalDensity
@@ -142,10 +143,12 @@ class SearchTeiLiveAdapter(
                             TeiListCardBox(
                                 modifier = if (card.background != null) {
                                     Modifier.size(cardWidthDp, cardHeightDp)
-                                        .background(color = card.background!!)
+                                        .background(color = card.background!!.copy(.2f))
                                 } else {
                                     Modifier
                                 },
+                                text = card.status ?: "",
+                                color = card.background!!
                             ) {
                                 ListCard(
                                     modifier = Modifier.onGloballyPositioned { coordinates ->
