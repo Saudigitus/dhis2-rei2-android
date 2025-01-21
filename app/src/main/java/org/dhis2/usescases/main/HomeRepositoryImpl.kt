@@ -17,7 +17,7 @@ import org.hisp.dhis.android.core.category.CategoryOptionCombo
 import org.hisp.dhis.android.core.program.ProgramType
 import org.hisp.dhis.android.core.systeminfo.SystemInfo
 import org.hisp.dhis.android.core.user.User
-import org.saudigitus.rei.utils.Utils.isRei
+import org.saudigitus.rei.utils.isRei
 
 class HomeRepositoryImpl(
     private val d2: D2,
@@ -82,7 +82,7 @@ class HomeRepositoryImpl(
                     } else {
                         null
                     },
-                    isRei = isRei(d2, program.uid()),
+                    isRei = d2.isRei(program.uid()),
                 )
 
             program?.programType() == ProgramType.WITHOUT_REGISTRATION ->

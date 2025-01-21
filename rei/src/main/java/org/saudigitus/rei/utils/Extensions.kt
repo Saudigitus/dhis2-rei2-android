@@ -1,10 +1,15 @@
 package org.saudigitus.rei.utils
 
+import android.util.Log
+import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.date.DateUtils
+import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventStatus
 import org.saudigitus.rei.data.model.AppConfigItem
+import org.saudigitus.rei.data.model.Status
+import org.saudigitus.rei.data.model.StatusKey
 import org.saudigitus.rei.utils.Utils.buildListFromJson
 import java.util.Locale
 
@@ -51,6 +56,12 @@ fun D2.reiModuleDatastore(): List<AppConfigItem> {
     return buildListFromJson<AppConfigItem>(datastore?.value()) ?: emptyList()
 }
 
+fun D2.isRei(program: String): Boolean {
+    val config = this.reiModuleDatastore().find { it.program == program }
+
+    return config != null && (config.defaults.displayStages || config.defaults.displaySupport)
+}
+
 fun D2.isEventOverdue(
     enrollment: String,
     stage: String,
@@ -59,3 +70,5 @@ fun D2.isEventOverdue(
     .byProgramStageUid().eq(stage)
     .byDueDate().before(DateUtils.getInstance().today)
     .blockingCount() > 0
+
+fun List<Status>.getByKey(key: String) = this.find { it.key == key }
