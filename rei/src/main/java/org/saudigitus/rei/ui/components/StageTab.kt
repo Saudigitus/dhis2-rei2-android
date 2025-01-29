@@ -1,4 +1,4 @@
-package org.saudigitus.rei.ui.stages
+package org.saudigitus.rei.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
 import org.saudigitus.rei.data.model.Stage
-import org.saudigitus.rei.ui.components.HomeStageCard
-import org.saudigitus.rei.ui.components.HomeStageCardState
 
 @Stable
 data class StageTabState(

@@ -1,7 +1,5 @@
 package org.saudigitus.rei.ui
 
-import android.content.Context
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -37,11 +35,9 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.saudigitus.support_module.ui.MenuScreen
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.saudigitus.rei.R
@@ -51,8 +47,7 @@ import org.saudigitus.rei.ui.components.NavigationItem
 import org.saudigitus.rei.ui.components.Toolbar
 import org.saudigitus.rei.ui.components.ToolbarActionState
 import org.saudigitus.rei.ui.mapper.TEICardMapper
-import org.saudigitus.rei.ui.stages.StageTab
-import org.saudigitus.rei.ui.stages.StageViewModel
+import org.saudigitus.rei.ui.components.StageTab
 import org.saudigitus.rei.ui.theme.seed
 import org.saudigitus.rei.utils.map
 
@@ -62,14 +57,13 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     activity: FragmentActivity,
     teiCardMapper: TEICardMapper,
-    viewModel: StageViewModel = hiltViewModel(),
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     onSync: () -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val teis by homeViewModel.teis.collectAsStateWithLifecycle()
+    val teis by viewModel.teis.collectAsStateWithLifecycle()
     val config by viewModel.config.collectAsStateWithLifecycle()
     val toolbarHeaders by viewModel.toolbarHeaders.collectAsStateWithLifecycle()
 

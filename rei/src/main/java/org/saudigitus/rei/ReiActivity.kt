@@ -17,14 +17,12 @@ import org.saudigitus.rei.navigator.ReiNavigator
 import org.saudigitus.rei.ui.HomeScreen
 import org.saudigitus.rei.ui.HomeViewModel
 import org.saudigitus.rei.ui.mapper.TEICardMapper
-import org.saudigitus.rei.ui.stages.StageViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReiActivity : FragmentActivity() {
 
-    private val viewModel: StageViewModel by viewModels()
-    private val homeviewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
 
     @Inject
     lateinit var teiCardMapper: TEICardMapper
