@@ -21,7 +21,7 @@ object ReiModule {
     @Provides
     @Singleton
     fun providesNetworkUtils(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): NetworkUtils = NetworkUtils(context)
 
     @Provides

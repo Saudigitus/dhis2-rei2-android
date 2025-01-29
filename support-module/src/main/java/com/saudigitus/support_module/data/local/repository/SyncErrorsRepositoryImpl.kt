@@ -10,9 +10,8 @@ import org.hisp.dhis.android.core.D2
 class SyncErrorsRepositoryImpl(
     private val d2: D2,
     private val errorMapper: ErrorModelMapper,
-): SyncErrorsRepository {
+) : SyncErrorsRepository {
     override fun getSyncErrors(): Flow<List<ErrorModel>> {
-
         val errors: MutableList<ErrorModel> = ArrayList()
         errors.addAll(
             errorMapper.mapD2Error(d2.maintenanceModule().d2Errors().blockingGet()),
@@ -27,6 +26,6 @@ class SyncErrorsRepositoryImpl(
                 d2.maintenanceModule().foreignKeyViolations().blockingGet(),
             ),
         )
-       return flowOf(errors.toList())
+        return flowOf(errors.toList())
     }
 }

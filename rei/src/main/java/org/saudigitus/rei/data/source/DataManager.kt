@@ -15,7 +15,7 @@ interface DataManager {
     suspend fun getTeis(
         program: String,
         stage: String?,
-        eventDate: String?
+        eventDate: String?,
     ): List<SearchTeiModel>
 
     suspend fun getStageEventData(

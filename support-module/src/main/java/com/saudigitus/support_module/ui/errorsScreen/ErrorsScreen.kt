@@ -34,22 +34,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.saudigitus.support_module.R
+import com.saudigitus.support_module.ui.SupportScreen.ErrorsViewModel
 import com.saudigitus.support_module.ui.components.BasicApp
 import com.saudigitus.support_module.ui.components.ErrorComponent
-import com.saudigitus.support_module.ui.SupportScreen.ErrorsViewModel
 import com.saudigitus.support_module.ui.theme.app_blue_color
 
 @Composable
 fun ErrorsScreen(
     navController: NavHostController,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val viewModel = hiltViewModel<ErrorsViewModel>()
     val errorsUiState by viewModel.errorsUiState.collectAsStateWithLifecycle()
 
-
     BasicApp(
-        title = stringResource(id = R.string.sync_errors_view_title) ,
+        title = stringResource(id = R.string.sync_errors_view_title),
         onBack = onBack,
         fab = {
             ExtendedFloatingActionButton(
@@ -57,60 +56,59 @@ fun ErrorsScreen(
                 text = { Text(stringResource(id = R.string.fab_send_lb)) }, // Text on the FAB
                 onClick = { /* Action when clicked */ },
                 containerColor = app_blue_color, // Background color of the FAB
-                contentColor = Color.White // Color of the text and icon
+                contentColor = Color.White, // Color of the text and icon
             )
         },
         content = {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0xFFFFFFFF))
-                .padding(16.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.Start
-        ) {
-            Column {
-                Text(
-                    text =(errorsUiState.errorsItems.size.toString())+ " "+ stringResource(id = R.string.sync_errors),
-                    fontSize = 16.sp,
-                    color = Color.Gray
-                )
-                Spacer(Modifier.height(10.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color(0xFFFFFFFF))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Column {
+                    Text(
+                        text = (errorsUiState.errorsItems.size.toString()) + " " + stringResource(id = R.string.sync_errors),
+                        fontSize = 16.sp,
+                        color = Color.Gray,
+                    )
+                    Spacer(Modifier.height(10.dp))
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(400.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    items(errorsUiState.errorsItems) { error ->
-                        ErrorComponent(
-                            error = error.errorDescription.toString(),
-                            type = error.errorCode.toString(),
-                            comp = error.errorComponent ?: "",
-                            date = error.creationDate.toString())
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth()
+                            .height(400.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        items(errorsUiState.errorsItems) { error ->
+                            ErrorComponent(
+                                error = error.errorDescription.toString(),
+                                type = error.errorCode.toString(),
+                                comp = error.errorComponent ?: "",
+                                date = error.creationDate.toString(),
+                            )
+                        }
                     }
                 }
-            }
 
-            val textState = remember { mutableStateOf("") }
-            Spacer(Modifier.height(20.dp))
-            TextField(
-                value = textState.value,
-                onValueChange = { textState.value = it },
-                label = { Text(text = stringResource(id = R.string.textarea_label)) },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 6,
-                maxLines = 6,
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Default
+                val textState = remember { mutableStateOf("") }
+                Spacer(Modifier.height(20.dp))
+                TextField(
+                    value = textState.value,
+                    onValueChange = { textState.value = it },
+                    label = { Text(text = stringResource(id = R.string.textarea_label)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    minLines = 6,
+                    maxLines = 6,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Default,
+                    ),
                 )
-            )
-            Spacer(Modifier.height(20.dp))
-
-        }
-    })
-
-
+                Spacer(Modifier.height(20.dp))
+            }
+        },
+    )
 }
 
 @Preview(showBackground = true)

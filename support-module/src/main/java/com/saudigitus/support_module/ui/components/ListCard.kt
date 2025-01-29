@@ -21,8 +21,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,7 +39,7 @@ fun ListCard(
     subtitle: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     onClick: () -> Unit,
-    state: ManualsUiState
+    state: ManualsUiState,
 ) {
     Card(
         modifier = Modifier
@@ -52,23 +50,23 @@ fun ListCard(
         shape = RoundedCornerShape(Radius.XS),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(10.dp),
-        ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
                 painter = painterResource(id = imageResId),
                 contentDescription = null,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(40.dp),
             )
 
-            Column (
-                modifier = Modifier.
-                width(220.dp),
+            Column(
+                modifier = Modifier
+                    .width(220.dp),
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
@@ -76,24 +74,26 @@ fun ListCard(
                     fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis,
                     color = Color.Black,
-                    maxLines = 1
+                    maxLines = 1,
                 )
                 Text(
                     text = subtitle,
                     fontSize = 12.sp,
                     color = Color.Gray,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    maxLines = 1,
                 )
             }
-            if(!state.isDownloading)
+            if (!state.isDownloading) {
                 Icon(
                     imageVector = icon,
                     contentDescription = title,
-                    tint = Color.Black
+                    tint = Color.Black,
                 )
-            if(state.isDownloading)
+            }
+            if (state.isDownloading) {
                 CircularProgressIndicator()
+            }
         }
     }
 }

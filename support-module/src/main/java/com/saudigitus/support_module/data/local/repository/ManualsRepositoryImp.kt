@@ -17,9 +17,9 @@ import org.hisp.dhis.android.core.D2
 import java.io.File
 
 class ManualsRepositoryImp(
-    private val  manualsDAO: ManualsDao,
-    private val d2: D2
-): ManualsRepository {
+    private val manualsDAO: ManualsDao,
+    private val d2: D2,
+) : ManualsRepository {
     override fun getManualsDataStore(): Flow<List<ManualItem>> {
         val dataStoreValue = d2.dataStoreModule().dataStore().byKey()
             .eq(Constants.MEDIA_DATA_STORE_KEY).blockingGet()
@@ -32,12 +32,12 @@ class ManualsRepositoryImp(
         }
     }
 
-    override suspend fun downloadManualToLocal(context: Context, url: String, fileName: String): Unit
-    = withContext(Dispatchers.IO) {
+    override suspend fun downloadManualToLocal(context: Context, url: String, fileName: String): Unit = withContext(Dispatchers.IO) {
         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val uri = Uri.parse(url)
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
-            "$fileName.pdf"
+        val file = File(
+            context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+            "$fileName.pdf",
         )
         if (!file.exists()) {
             val request = DownloadManager.Request(uri).apply {
@@ -50,9 +50,7 @@ class ManualsRepositoryImp(
         return@withContext
     }
 
-
-    override suspend fun openManual(context: Context, url: String, fileName: String): File?
-    = withContext(Dispatchers.IO)  {
+    override suspend fun openManual(context: Context, url: String, fileName: String): File? = withContext(Dispatchers.IO) {
         // Get the file from the app's private storage
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "$fileName.pdf")
         if (file.exists()) {

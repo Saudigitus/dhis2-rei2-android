@@ -5,14 +5,10 @@ import io.ktor.client.utils.EmptyContent.status
 import org.dhis2.commons.resources.ColorUtils
 import org.dhis2.usescases.searchTrackEntity.SearchTeiModel
 import org.hisp.dhis.android.core.D2
-import org.saudigitus.rei.R
 import org.saudigitus.rei.data.model.AppConfigItem
 import org.saudigitus.rei.data.model.LineListing
 import org.saudigitus.rei.data.model.Status
 import org.saudigitus.rei.data.model.StatusKey
-import org.saudigitus.rei.ui.theme.Light_Error
-import org.saudigitus.rei.ui.theme.Light_Success
-import org.saudigitus.rei.ui.theme.Light_Warning
 import org.saudigitus.rei.utils.eventOrderedByDateDesc
 import org.saudigitus.rei.utils.getByKey
 import org.saudigitus.rei.utils.isEventOverdue
@@ -44,7 +40,7 @@ class ReiSearchTeiStyle(private val d2: D2) {
         return if (!color.isNullOrEmpty()) {
             Color(colorUtils.parseColor(color))
         } else {
-           Color.Transparent
+            Color.Transparent
         }
     }
 

@@ -7,16 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,7 +22,7 @@ fun ErrorComponent(error: String, type: String, comp: String, date: String) {
     Card(
         shape = RoundedCornerShape(8.dp),
         modifier = Modifier
-            .border(1.dp, Color.Red, RoundedCornerShape(8.dp)) // Red border
+            .border(1.dp, Color.Red, RoundedCornerShape(8.dp)), // Red border
     ) {
         Column(
             modifier = Modifier
@@ -36,35 +30,33 @@ fun ErrorComponent(error: String, type: String, comp: String, date: String) {
                 .background(Color(0xFFFFCDD2))
                 .padding(8.dp),
         ) {
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-            ){
+            ) {
                 Text(
                     text = date,
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
                 Text(
                     text = "$type $comp",
                     fontSize = 10.sp,
-                    color = Color.Red
+                    color = Color.Red,
                 )
             }
             Text(
                 text = error,
                 fontSize = 12.sp,
-                color = Color.Black
+                color = Color.Black,
             )
         }
-
-
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun ScreenPreview() {
-    ErrorComponent("Error It is a long established fact reader", "FK", "server","2012-15-54")
+    ErrorComponent("Error It is a long established fact reader", "FK", "server", "2012-15-54")
 }

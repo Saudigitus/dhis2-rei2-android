@@ -84,7 +84,9 @@ import java.io.Serializable
 import java.util.Date
 import javax.inject.Inject
 
-class SearchTEActivity : ActivityGlobalAbstract(), SearchTEContractsModule.View,
+class SearchTEActivity :
+    ActivityGlobalAbstract(),
+    SearchTEContractsModule.View,
     LineListingComponentProvider {
 
     private lateinit var binding: ActivitySearchBinding

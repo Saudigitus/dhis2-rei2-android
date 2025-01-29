@@ -57,7 +57,7 @@ fun ProgramUiModel.toHomeItemData(): HomeItemData {
                 accessDataWrite,
                 type!!,
                 stockConfig,
-                isRei
+                isRei,
             )
 
         else -> HomeItemData.DataSet(

@@ -13,16 +13,16 @@ import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
 import org.saudigitus.rei.data.source.DataManager
-import org.saudigitus.rei.ui.components.ToolbarHeaders
 import org.saudigitus.rei.ui.components.StageTabState
+import org.saudigitus.rei.ui.components.ToolbarHeaders
 import org.saudigitus.rei.ui.mapper.TEICardMapper
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: DataManager,
-    private val teiCardMapper: TEICardMapper
-): ViewModel() {
+    private val teiCardMapper: TEICardMapper,
+) : ViewModel() {
 
     private val viewModelState = MutableStateFlow(HomeUIState())
 
@@ -36,7 +36,6 @@ class HomeViewModel @Inject constructor(
     private val _program = MutableStateFlow("")
     val program: StateFlow<String> = _program
 
-
     init {
         viewModelScope.launch {
             viewModelState.update {
@@ -45,8 +44,8 @@ class HomeViewModel @Inject constructor(
                     teis = repository.getTeis(
                         program = "poORjulSx9q",
                         stage = "ZdFBmeA8aqp",
-                        eventDate = null
-                    )
+                        eventDate = null,
+                    ),
                 )
             }
         }
@@ -63,7 +62,7 @@ class HomeViewModel @Inject constructor(
                         stagesData = repository.getStageEventData(
                             program.value,
                             stages.firstOrNull()?.uid ?: "",
-                        )
+                        ),
                     ),
                 )
             }
@@ -78,7 +77,7 @@ class HomeViewModel @Inject constructor(
             viewModelState.update {
                 it.copy(
                     toolbarHeaders = ToolbarHeaders(title = "${bundle?.getString(DATA_SET_NAME)}"),
-                    config = repository.loadConfig().find { data -> data.program == program.value }
+                    config = repository.loadConfig().find { data -> data.program == program.value },
                 )
             }
         }
@@ -92,8 +91,8 @@ class HomeViewModel @Inject constructor(
                 it.copy(
                     stageTabState = StageTabState(
                         stages = stageState?.stages ?: emptyList(),
-                        stagesData = repository.getStageEventData(program.value, stage)
-                    )
+                        stagesData = repository.getStageEventData(program.value, stage),
+                    ),
                 )
             }
         }

@@ -115,7 +115,7 @@ internal class ProgramRepositoryImpl(
                     } else {
                         null
                     },
-                    isRei = d2.isRei(program.uid())
+                    isRei = d2.isRei(program.uid()),
                 )
             }.toList().toFlowable().blockingFirst()
     }
