@@ -50,7 +50,6 @@ class DataManagerImpl
 
 
     override suspend fun getTeis(
-        ou: String,
         program: String,
         stage: String?,
         eventDate: String?
@@ -59,7 +58,6 @@ class DataManagerImpl
 
         return@withContext if (networkUtils.isOnline()) {
             repository.offlineFirst().allowOnlineCache().eq(true)
-                .byOrgUnits().eq(ou)
                 .byProgram().eq(program)
                 .byProgramStage().eq("$stage")
                 .blockingGet()
@@ -67,7 +65,6 @@ class DataManagerImpl
                 .map { tei -> transform(tei, program) }
         } else {
             repository.offlineOnly().allowOnlineCache().eq(false)
-                .byOrgUnits().eq(ou)
                 .byProgram().eq(program)
                 .byProgramStage().eq("$stage")
                 .blockingGet()

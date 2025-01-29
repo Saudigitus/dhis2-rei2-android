@@ -33,4 +33,5 @@
     <string name="sync_dialog_title_warning">Sync warning</string>
     <string name="sync_dialog_title_syncing">Syncing</string>
     <string name="sync_dialog_title_sms_syced">SMS sent</string>
+    <string name="scheduled_children">Crianças Agendadas</string>
 </resources>

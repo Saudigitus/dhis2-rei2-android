@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,39 +34,47 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.saudigitus.rei.R
+import org.saudigitus.rei.data.model.AppConfigItem
 import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.ui.components.NavBar
 import org.saudigitus.rei.ui.components.NavigationItem
+import org.saudigitus.rei.ui.components.StageTab
+import org.saudigitus.rei.ui.components.StageTabState
 import org.saudigitus.rei.ui.components.Toolbar
 import org.saudigitus.rei.ui.components.ToolbarActionState
+import org.saudigitus.rei.ui.components.ToolbarHeaders
 import org.saudigitus.rei.ui.mapper.TEICardMapper
-import org.saudigitus.rei.ui.components.StageTab
 import org.saudigitus.rei.ui.theme.seed
 import org.saudigitus.rei.utils.map
+
+
+@Stable
+data class HomeUIState(
+    val toolbarHeaders: ToolbarHeaders = ToolbarHeaders(""),
+    val stageTabState: StageTabState? = null,
+    val config: AppConfigItem? = null,
+    val teiCardMapper: TEICardMapper? = null,
+    val teis: List<SearchTeiModel> = emptyList(),
+)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     activity: FragmentActivity,
-    teiCardMapper: TEICardMapper,
-    viewModel: HomeViewModel = hiltViewModel(),
+    uiState: HomeUIState,
     onSync: () -> Unit,
     onNext: () -> Unit,
+    loadStageData: (stage: String) -> Unit,
     onBack: () -> Unit,
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val teis by viewModel.teis.collectAsStateWithLifecycle()
-    val config by viewModel.config.collectAsStateWithLifecycle()
-    val toolbarHeaders by viewModel.toolbarHeaders.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
     var route by rememberSaveable { mutableStateOf(NavigationItem.REI) }
@@ -73,7 +82,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                headers = toolbarHeaders,
+                headers = uiState.toolbarHeaders,
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = seed,
                     navigationIconContentColor = Color.White,
@@ -124,37 +133,53 @@ fun HomeScreen(
             startDestination = route.name
         ) {
             composable(NavigationItem.REI.name) {
-                Column(
+                HomeUI(
                     modifier = Modifier.fillMaxSize()
                         .padding(innerPadding)
                         .then(modifier),
-                    verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-                    horizontalAlignment = Alignment.Start,
-                ) {
-                    if (config?.defaults?.displayStages == true) {
-                        StageTab(
-                            modifier = Modifier.fillMaxWidth(),
-                            state = state,
-                            onAction = viewModel::loadStageData,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.size(12.dp))
-
-
-                    TEIList(
-                        teiCardMapper = teiCardMapper,
-                        students = teis,
-                    )
-                }
+                    uiState = uiState,
+                    onAction = loadStageData
+                )
             }
             composable(NavigationItem.ANALYTICS.name) {
                 AnalyticsScreen(
                     modifier = Modifier.fillMaxSize()
-                        .padding(innerPadding),
+                        .padding(innerPadding)
+                        .then(modifier),
                     activity = activity
                 )
             }
+        }
+    }
+}
+
+
+@Composable
+fun HomeUI(
+    modifier: Modifier = Modifier,
+    uiState: HomeUIState,
+    onAction: (uid: String) -> Unit
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+        horizontalAlignment = Alignment.Start,
+    ) {
+        if (uiState.config?.defaults?.displayStages == true && uiState.stageTabState != null) {
+            StageTab(
+                modifier = Modifier.fillMaxWidth(),
+                state = uiState.stageTabState,
+                onAction = onAction,
+            )
+        }
+
+        Spacer(modifier = Modifier.size(12.dp))
+
+        uiState.teiCardMapper?.let { cardMapper ->
+            TEIList(
+                teiCardMapper = cardMapper,
+                students = uiState.teis,
+            )
         }
     }
 }
@@ -167,7 +192,7 @@ private fun TEIList(
     onCardClick: (String, String) -> Unit = {_, _ ->}
 ) {
     Text(
-        text = "Crianças agendadas",
+        text = stringResource(R.string.scheduled_children),
         modifier = Modifier.padding(horizontal = 16.dp),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,

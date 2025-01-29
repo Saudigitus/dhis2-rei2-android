@@ -13,7 +13,6 @@ interface DataManager {
     ): List<Stage>
 
     suspend fun getTeis(
-        ou: String,
         program: String,
         stage: String?,
         eventDate: String?

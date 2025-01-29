@@ -12,19 +12,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
-import org.saudigitus.rei.data.model.AppConfigItem
-import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.source.DataManager
 import org.saudigitus.rei.ui.components.ToolbarHeaders
 import org.saudigitus.rei.ui.components.StageTabState
+import org.saudigitus.rei.ui.mapper.TEICardMapper
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: DataManager
+    private val repository: DataManager,
+    private val teiCardMapper: TEICardMapper
 ): ViewModel() {
 
-    private val viewModelState = MutableStateFlow(StageTabState())
+    private val viewModelState = MutableStateFlow(HomeUIState())
 
     val uiState = viewModelState
         .stateIn(
@@ -33,34 +33,22 @@ class HomeViewModel @Inject constructor(
             viewModelState.value,
         )
 
-    private val _toolbarHeaders = MutableStateFlow(
-        ToolbarHeaders(title = ""),
-    )
-    val toolbarHeaders: StateFlow<ToolbarHeaders> = _toolbarHeaders
-
-    private val _config = MutableStateFlow<AppConfigItem?>(null)
-    val config: StateFlow<AppConfigItem?> = _config
-
     private val _program = MutableStateFlow("")
     val program: StateFlow<String> = _program
 
-    private val _teis = MutableStateFlow<List<SearchTeiModel>>(emptyList())
-    val teis: StateFlow<List<SearchTeiModel>> = _teis
 
     init {
         viewModelScope.launch {
-            _teis.value = repository.getTeis(
-                ou = "",
-                program = "",
-                stage = "",
-                eventDate = null
-            )
-        }
-    }
-
-    private fun loadConfig(program: String) {
-        viewModelScope.launch {
-            _config.value = repository.loadConfig().find { it.program == program }
+            viewModelState.update {
+                it.copy(
+                    teiCardMapper = teiCardMapper,
+                    teis = repository.getTeis(
+                        program = "poORjulSx9q",
+                        stage = "ZdFBmeA8aqp",
+                        eventDate = null
+                    )
+                )
+            }
         }
     }
 
@@ -70,10 +58,12 @@ class HomeViewModel @Inject constructor(
 
             viewModelState.update {
                 it.copy(
-                    stages = stages,
-                    stagesData = repository.getStageEventData(
-                        program.value,
-                        stages.firstOrNull()?.uid ?: "",
+                    stageTabState = StageTabState(
+                        stages = stages,
+                        stagesData = repository.getStageEventData(
+                            program.value,
+                            stages.firstOrNull()?.uid ?: "",
+                        )
                     ),
                 )
             }
@@ -82,18 +72,29 @@ class HomeViewModel @Inject constructor(
 
     fun setBundle(bundle: Bundle?) {
         _program.value = bundle?.getString(Constants.PROGRAM_UID) ?: ""
-        loadConfig(program.value)
         loadStages()
 
-        _toolbarHeaders.update {
-            it.copy(title = "${bundle?.getString(DATA_SET_NAME)}")
+        viewModelScope.launch {
+            viewModelState.update {
+                it.copy(
+                    toolbarHeaders = ToolbarHeaders(title = "${bundle?.getString(DATA_SET_NAME)}"),
+                    config = repository.loadConfig().find { data -> data.program == program.value }
+                )
+            }
         }
     }
 
     fun loadStageData(stage: String) {
         viewModelScope.launch {
+            val stageState = viewModelState.value.stageTabState
+
             viewModelState.update {
-                it.copy(stagesData = repository.getStageEventData(program.value, stage))
+                it.copy(
+                    stageTabState = StageTabState(
+                        stages = stageState?.stages ?: emptyList(),
+                        stagesData = repository.getStageEventData(program.value, stage)
+                    )
+                )
             }
         }
     }
