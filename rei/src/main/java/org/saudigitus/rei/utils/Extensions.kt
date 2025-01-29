@@ -1,16 +1,12 @@
 package org.saudigitus.rei.utils
 
-import android.util.Log
-import androidx.compose.ui.graphics.Color
 import org.dhis2.commons.date.DateUtils
-import org.dhis2.commons.resources.ColorUtils
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventStatus
 import org.saudigitus.rei.data.model.AppConfigItem
 import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.model.Status
-import org.saudigitus.rei.data.model.StatusKey
 import org.saudigitus.rei.ui.mapper.TEICardMapper
 import org.saudigitus.rei.utils.Utils.buildListFromJson
 import java.util.Locale
@@ -87,7 +83,7 @@ fun SearchTeiModel.map(
         }
     },
     onCardClick = {
-        onCardClick(this.uid(), this.enrollments.getOrNull(0)?.uid() ?: "")
+        onCardClick(this.uid(), this.selectedEnrollment.uid() ?: "")
     },
     onImageClick = {},
 )

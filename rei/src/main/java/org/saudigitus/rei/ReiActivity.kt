@@ -18,8 +18,6 @@ import org.dhis2.ui.theme.Dhis2Theme
 import org.saudigitus.rei.navigator.ReiNavigator
 import org.saudigitus.rei.ui.HomeScreen
 import org.saudigitus.rei.ui.HomeViewModel
-import org.saudigitus.rei.ui.mapper.TEICardMapper
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReiActivity : FragmentActivity() {
@@ -42,6 +40,7 @@ class ReiActivity : FragmentActivity() {
                         onSync = ::syncProgram,
                         onNext = ::launchLineListing,
                         loadStageData = viewModel::loadStageData,
+                        onTeiClick = ::navToTeiDashboard,
                     ) {
                         finish()
                     }
@@ -72,5 +71,15 @@ class ReiActivity : FragmentActivity() {
         ).navigateToLineListing()
     }
 
-
+    private fun navToTeiDashboard(
+        teiUid: String?,
+        enrollmentUid: String?,
+    ) {
+        ReiNavigator(this@ReiActivity)
+            .navigateToTeiDashboard(
+                teiUid,
+                viewModel.program.value,
+                enrollmentUid,
+            )
+    }
 }

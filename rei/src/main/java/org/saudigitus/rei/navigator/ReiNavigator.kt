@@ -5,14 +5,33 @@ import androidx.fragment.app.FragmentActivity
 
 class ReiNavigator(
     val activity: FragmentActivity,
-    val bundle: Bundle,
+    val bundle: Bundle? = null,
 ) {
     fun navigateToLineListing() {
+        if (bundle != null) {
+            (activity.applicationContext as? NavigatorComponentProvider)
+                ?.lineListing
+                ?.launch(
+                    activity,
+                    bundle,
+                )?.let {
+                    activity.startActivity(it)
+                }
+        }
+    }
+
+    fun navigateToTeiDashboard(
+        teiUid: String?,
+        programUid: String?,
+        enrollmentUid: String?,
+    ) {
         (activity.applicationContext as? NavigatorComponentProvider)
-            ?.lineListing
+            ?.teiDashboard
             ?.launch(
                 activity,
-                bundle,
+                teiUid,
+                programUid,
+                enrollmentUid,
             )?.let {
                 activity.startActivity(it)
             }

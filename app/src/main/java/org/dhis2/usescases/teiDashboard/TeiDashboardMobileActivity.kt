@@ -84,13 +84,15 @@ import org.dhis2.utils.isPortrait
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.navigationBar.NavigationBar
 import org.hisp.dhis.mobile.ui.designsystem.theme.DHIS2Theme
+import org.saudigitus.rei.navigator.TeiDashboardComponentProvider
 import javax.inject.Inject
 
 class TeiDashboardMobileActivity :
     ActivityGlobalAbstract(),
     TeiDashboardContracts.View,
     MapButtonObservable,
-    TEIDataActivityContract {
+    TEIDataActivityContract,
+    TeiDashboardComponentProvider {
     private var currentOrientation = -1
 
     @Inject
@@ -855,6 +857,19 @@ class TeiDashboardMobileActivity :
                 }
             }
         }
+    }
+
+    override fun launch(
+        context: Context,
+        teiUid: String?,
+        programUid: String?,
+        enrollmentUid: String?,
+    ): Intent {
+        val intent = Intent(context, TeiDashboardMobileActivity::class.java)
+        intent.putExtra(TEI_UID, teiUid)
+        intent.putExtra(Constants.PROGRAM_UID, programUid)
+        intent.putExtra(Constants.ENROLLMENT_UID, enrollmentUid)
+        return intent
     }
 }
 

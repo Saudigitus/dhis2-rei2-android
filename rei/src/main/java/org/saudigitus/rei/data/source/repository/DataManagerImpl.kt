@@ -10,7 +10,7 @@ import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
-import org.hisp.dhis.android.core.enrollment.Enrollment
+import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
@@ -31,6 +31,7 @@ class DataManagerImpl
 ) : DataManager {
 
     private lateinit var currentProgram: String
+    private val orgUnitNameCache = mutableMapOf<String, String?>()
 
     override suspend fun loadConfig() = withContext(Dispatchers.IO) {
         return@withContext d2.reiModuleDatastore()
@@ -48,12 +49,11 @@ class DataManagerImpl
             }
     }
 
-
     override suspend fun getTeis(
         program: String,
         stage: String?,
-        eventDate: String?
-    ) =  withContext(Dispatchers.IO) {
+        eventDate: String?,
+    ) = withContext(Dispatchers.IO) {
         val repository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
         return@withContext if (networkUtils.isOnline()) {
@@ -96,7 +96,6 @@ class DataManagerImpl
     private fun transform(
         tei: TrackedEntityInstance?,
         program: String?,
-        enrollment: Enrollment? = null,
     ): SearchTeiModel {
         val searchTei = SearchTeiModel()
         searchTei.tei = tei
@@ -139,10 +138,36 @@ class DataManagerImpl
                     }
                 }
             }
-        }
 
-        if (enrollment != null) {
-            searchTei.addEnrollment(enrollment)
+            val enrollments = d2.enrollmentModule().enrollments()
+                .byTrackedEntityInstance().eq(tei.uid())
+                .byProgram().eq("$program")
+                .orderByEnrollmentDate(RepositoryScope.OrderByDirection.DESC)
+                .blockingGet()
+
+            if (enrollments.isNotEmpty()) {
+                for (enrollment in enrollments) {
+                    if (enrollment.status() == EnrollmentStatus.ACTIVE) {
+                        searchTei.setCurrentEnrollment(enrollment)
+                        break
+                    }
+                }
+            }
+
+            if (searchTei.selectedEnrollment == null) {
+                searchTei.setCurrentEnrollment(enrollments[0])
+            }
+
+            for (enrollment in enrollments) {
+                searchTei.addEnrollment(enrollment)
+            }
+
+            if (searchTei.selectedEnrollment != null) {
+                searchTei.enrolledOrgUnit =
+                    orgUnitName(searchTei.selectedEnrollment.organisationUnit()!!)
+            } else {
+                searchTei.enrolledOrgUnit = orgUnitName(searchTei.tei.organisationUnit()!!)
+            }
         }
 
         searchTei.displayOrgUnit = displayOrgUnit()
@@ -163,6 +188,17 @@ class DataManagerImpl
             .trackedEntityAttribute(attrValue.trackedEntityAttribute())
             .trackedEntityInstance(searchTei.tei.uid())
         searchTei.addAttributeValue(attribute?.displayFormName(), attrValueBuilder.build())
+    }
+
+    private fun orgUnitName(orgUnitUid: String): String? {
+        if (!orgUnitNameCache.containsKey(orgUnitUid)) {
+            val organisationUnit = d2.organisationUnitModule()
+                .organisationUnits()
+                .uid(orgUnitUid)
+                .blockingGet()
+            orgUnitNameCache[orgUnitUid] = organisationUnit!!.displayName()
+        }
+        return orgUnitNameCache[orgUnitUid]
     }
 
     private fun displayOrgUnit(): Boolean {

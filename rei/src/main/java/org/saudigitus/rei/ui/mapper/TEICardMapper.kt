@@ -16,13 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-
 import org.dhis2.bindings.hasFollowUp
 import org.dhis2.commons.date.toDateSpan
 import org.dhis2.commons.date.toOverdueOrScheduledUiText
 import org.dhis2.commons.resources.ResourceManager
 import org.dhis2.commons.ui.model.ListCardUiModel
-
 import org.hisp.dhis.android.core.common.State
 import org.hisp.dhis.android.core.enrollment.Enrollment
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
@@ -44,7 +42,7 @@ import java.util.Date
 class TEICardMapper(
     val context: Context,
     val resourceManager: ResourceManager,
-    //private val searchTeiStyle: ReiSearchTeiStyle,
+    // private val searchTeiStyle: ReiSearchTeiStyle,
 ) {
 
     fun map(
@@ -53,7 +51,7 @@ class TEICardMapper(
         onCardClick: () -> Unit,
         onImageClick: (String) -> Unit,
     ): ListCardUiModel {
-        //val style = searchTeiStyle.getTeiCardBackground(searchTEIModel)
+        // val style = searchTeiStyle.getTeiCardBackground(searchTEIModel)
 
         return ListCardUiModel(
             avatar = { ProvideAvatar(searchTEIModel, onImageClick) },
@@ -134,12 +132,12 @@ class TEICardMapper(
         attributeList.removeIf { it.value.isEmpty() || it.value == "-" }
 
         return attributeList.also { list ->
-            /*if (searchTEIModel.displayOrgUnit) {
+            if (searchTEIModel.displayOrgUnit) {
                 checkEnrolledIn(
                     list = list,
                     enrolledOrgUnit = searchTEIModel.enrolledOrgUnit,
                 )
-            }*/
+            }
 
             checkEnrolledPrograms(
                 list = list,

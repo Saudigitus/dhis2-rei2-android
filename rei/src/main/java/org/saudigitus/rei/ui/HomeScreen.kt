@@ -53,7 +53,6 @@ import org.saudigitus.rei.ui.mapper.TEICardMapper
 import org.saudigitus.rei.ui.theme.seed
 import org.saudigitus.rei.utils.map
 
-
 @Stable
 data class HomeUIState(
     val toolbarHeaders: ToolbarHeaders = ToolbarHeaders(""),
@@ -62,7 +61,6 @@ data class HomeUIState(
     val teiCardMapper: TEICardMapper? = null,
     val teis: List<SearchTeiModel> = emptyList(),
 )
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,9 +71,9 @@ fun HomeScreen(
     onSync: () -> Unit,
     onNext: () -> Unit,
     loadStageData: (stage: String) -> Unit,
+    onTeiClick: (tei: String, enrollment: String) -> Unit,
     onBack: () -> Unit,
 ) {
-
     val navController = rememberNavController()
     var route by rememberSaveable { mutableStateOf(NavigationItem.REI) }
 
@@ -120,17 +118,17 @@ fun HomeScreen(
         },
         bottomBar = {
             NavBar(destination = route.ordinal) {
-                route = when(it) {
+                route = when (it) {
                     NavigationItem.REI.ordinal -> NavigationItem.REI
                     NavigationItem.ANALYTICS.ordinal -> NavigationItem.ANALYTICS
                     else -> NavigationItem.NONE
                 }
             }
-        }
+        },
     ) { innerPadding ->
         NavHost(
             navController,
-            startDestination = route.name
+            startDestination = route.name,
         ) {
             composable(NavigationItem.REI.name) {
                 HomeUI(
@@ -138,7 +136,8 @@ fun HomeScreen(
                         .padding(innerPadding)
                         .then(modifier),
                     uiState = uiState,
-                    onAction = loadStageData
+                    onAction = loadStageData,
+                    onTeiClick = onTeiClick,
                 )
             }
             composable(NavigationItem.ANALYTICS.name) {
@@ -146,19 +145,19 @@ fun HomeScreen(
                     modifier = Modifier.fillMaxSize()
                         .padding(innerPadding)
                         .then(modifier),
-                    activity = activity
+                    activity = activity,
                 )
             }
         }
     }
 }
 
-
 @Composable
 fun HomeUI(
     modifier: Modifier = Modifier,
     uiState: HomeUIState,
-    onAction: (uid: String) -> Unit
+    onAction: (uid: String) -> Unit,
+    onTeiClick: (tei: String, enrollment: String) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -179,17 +178,17 @@ fun HomeUI(
             TEIList(
                 teiCardMapper = cardMapper,
                 students = uiState.teis,
+                onCardClick = onTeiClick,
             )
         }
     }
 }
 
-
 @Composable
 private fun TEIList(
     teiCardMapper: TEICardMapper,
     students: List<SearchTeiModel>,
-    onCardClick: (String, String) -> Unit = {_, _ ->}
+    onCardClick: (String, String) -> Unit = { _, _ -> },
 ) {
     Text(
         text = stringResource(R.string.scheduled_children),
@@ -201,7 +200,7 @@ private fun TEIList(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
+        contentPadding = PaddingValues(16.dp),
     ) {
         items(students) { student ->
             val card = student.map(teiCardMapper, onCardClick = onCardClick)
