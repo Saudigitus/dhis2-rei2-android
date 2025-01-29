@@ -8,8 +8,10 @@ import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.event.EventStatus
 import org.saudigitus.rei.data.model.AppConfigItem
+import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.model.Status
 import org.saudigitus.rei.data.model.StatusKey
+import org.saudigitus.rei.ui.mapper.TEICardMapper
 import org.saudigitus.rei.utils.Utils.buildListFromJson
 import java.util.Locale
 
@@ -72,3 +74,20 @@ fun D2.isEventOverdue(
     .blockingCount() > 0
 
 fun List<Status>.getByKey(key: String) = this.find { it.key == key }
+
+fun SearchTeiModel.map(
+    teiCardMapper: TEICardMapper,
+    onSyncIconClick: ((uid: String) -> Unit)? = null,
+    onCardClick: (tei: String, enrollment: String) -> Unit = { _, _ -> },
+) = teiCardMapper.map(
+    searchTEIModel = this,
+    onSyncIconClick = {
+        if (onSyncIconClick != null) {
+            onSyncIconClick(this.uid())
+        }
+    },
+    onCardClick = {
+        onCardClick(this.uid(), this.enrollments.getOrNull(0)?.uid() ?: "")
+    },
+    onImageClick = {},
+)

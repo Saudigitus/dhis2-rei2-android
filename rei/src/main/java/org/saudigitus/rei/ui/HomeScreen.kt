@@ -1,13 +1,17 @@
 package org.saudigitus.rei.ui
 
 import android.content.Context
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,37 +22,59 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.saudigitus.support_module.ui.MenuScreen
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
+import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.saudigitus.rei.R
+import org.saudigitus.rei.data.model.SearchTeiModel
+import org.saudigitus.rei.ui.components.NavBar
+import org.saudigitus.rei.ui.components.NavigationItem
 import org.saudigitus.rei.ui.components.Toolbar
 import org.saudigitus.rei.ui.components.ToolbarActionState
+import org.saudigitus.rei.ui.mapper.TEICardMapper
 import org.saudigitus.rei.ui.stages.StageTab
 import org.saudigitus.rei.ui.stages.StageViewModel
 import org.saudigitus.rei.ui.theme.seed
+import org.saudigitus.rei.utils.map
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    context: Context,
+    activity: FragmentActivity,
+    teiCardMapper: TEICardMapper,
     viewModel: StageViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     onSync: () -> Unit,
     onNext: () -> Unit,
     onBack: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val teis by homeViewModel.teis.collectAsStateWithLifecycle()
     val config by viewModel.config.collectAsStateWithLifecycle()
     val toolbarHeaders by viewModel.toolbarHeaders.collectAsStateWithLifecycle()
+
+    val navController = rememberNavController()
+    var route by rememberSaveable { mutableStateOf(NavigationItem.REI) }
 
     Scaffold(
         topBar = {
@@ -67,55 +93,111 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = {
-                    Text(
-                        text = stringResource(R.string.patients),
-                        fontWeight = FontWeight.Bold,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        softWrap = true,
-                    )
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                        contentDescription = null,
-                    )
-                },
-                onClick = onNext::invoke,
-                contentColor = Color.White,
-            )
+            if (route == NavigationItem.REI) {
+                ExtendedFloatingActionButton(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.patients),
+                            fontWeight = FontWeight.Bold,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            softWrap = true,
+                        )
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                            contentDescription = null,
+                        )
+                    },
+                    onClick = onNext::invoke,
+                    contentColor = Color.White,
+                )
+            }
         },
+        bottomBar = {
+            NavBar(destination = route.ordinal) {
+                route = when(it) {
+                    NavigationItem.REI.ordinal -> NavigationItem.REI
+                    NavigationItem.ANALYTICS.ordinal -> NavigationItem.ANALYTICS
+                    else -> NavigationItem.NONE
+                }
+            }
+        }
     ) { innerPadding ->
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(innerPadding)
-                .then(modifier),
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
-            horizontalAlignment = Alignment.Start,
+        NavHost(
+            navController,
+            startDestination = route.name
         ) {
-            if (config?.defaults?.displayStages == true) {
-                StageTab(
-                    modifier = Modifier.fillMaxWidth(),
-                    state = state,
-                    onAction = viewModel::loadStageData,
+            composable(NavigationItem.REI.name) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                        .padding(innerPadding)
+                        .then(modifier),
+                    verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    if (config?.defaults?.displayStages == true) {
+                        StageTab(
+                            modifier = Modifier.fillMaxWidth(),
+                            state = state,
+                            onAction = viewModel::loadStageData,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.size(12.dp))
+
+
+                    TEIList(
+                        teiCardMapper = teiCardMapper,
+                        students = teis,
+                    )
+                }
+            }
+            composable(NavigationItem.ANALYTICS.name) {
+                AnalyticsScreen(
+                    modifier = Modifier.fillMaxSize()
+                        .padding(innerPadding),
+                    activity = activity
                 )
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.size(12.dp))
 
-            if (config?.defaults?.displaySupport == true) {
-                Text(
-                    text = "Suporte ao utilizador",
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black.copy(.5f),
-                )
+@Composable
+private fun TEIList(
+    teiCardMapper: TEICardMapper,
+    students: List<SearchTeiModel>,
+    onCardClick: (String, String) -> Unit = {_, _ ->}
+) {
+    Text(
+        text = "Crianças agendadas",
+        modifier = Modifier.padding(horizontal = 16.dp),
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.Black.copy(.5f),
+    )
 
-                MenuScreen(context = context)
-            }
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        items(students) { student ->
+            val card = student.map(teiCardMapper, onCardClick = onCardClick)
+
+            ListCard(
+                modifier = Modifier.testTag("TEI_ITEM"),
+                listAvatar = card.avatar,
+                title = ListCardTitleModel(text = card.title),
+                lastUpdated = card.lastUpdated,
+                additionalInfoList = card.additionalInfo,
+                actionButton = card.actionButton,
+                expandLabelText = card.expandLabelText,
+                shrinkLabelText = card.shrinkLabelText,
+                onCardClick = card.onCardCLick,
+            )
         }
     }
 }

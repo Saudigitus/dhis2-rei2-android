@@ -2,6 +2,7 @@ package org.saudigitus.rei.data.source
 
 import androidx.compose.ui.graphics.Color
 import org.saudigitus.rei.data.model.AppConfigItem
+import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.model.Stage
 
 interface DataManager {
@@ -10,6 +11,13 @@ interface DataManager {
     suspend fun getStages(
         program: String,
     ): List<Stage>
+
+    suspend fun getTeis(
+        ou: String,
+        program: String,
+        stage: String?,
+        eventDate: String?
+    ): List<SearchTeiModel>
 
     suspend fun getStageEventData(
         program: String,

@@ -15,12 +15,19 @@ import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.ui.theme.Dhis2Theme
 import org.saudigitus.rei.navigator.ReiNavigator
 import org.saudigitus.rei.ui.HomeScreen
+import org.saudigitus.rei.ui.HomeViewModel
+import org.saudigitus.rei.ui.mapper.TEICardMapper
 import org.saudigitus.rei.ui.stages.StageViewModel
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReiActivity : FragmentActivity() {
 
     private val viewModel: StageViewModel by viewModels()
+    private val homeviewModel: HomeViewModel by viewModels()
+
+    @Inject
+    lateinit var teiCardMapper: TEICardMapper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +39,8 @@ class ReiActivity : FragmentActivity() {
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     HomeScreen(
-                        context = this@ReiActivity,
+                        activity = this@ReiActivity,
+                        teiCardMapper = teiCardMapper,
                         onSync = ::syncProgram,
                         onNext = ::launchLineListing,
                     ) {
@@ -64,4 +72,6 @@ class ReiActivity : FragmentActivity() {
             intent?.extras!!,
         ).navigateToLineListing()
     }
+
+
 }
