@@ -84,7 +84,9 @@ fun StageTab(
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = if(state.stagesData.size >= 3) {
+                    Arrangement.SpaceBetween
+                } else { Arrangement.SpaceEvenly },
                 verticalAlignment = Alignment.CenterVertically,
                 contentPadding = PaddingValues(horizontal = 16.dp),
             ) {
