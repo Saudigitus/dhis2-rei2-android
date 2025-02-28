@@ -1,6 +1,5 @@
 package com.saudigitus.support_module.data.models.manuals
 
-
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -14,11 +13,11 @@ data class ManualItem(
     @PrimaryKey val uid: String,
 
     @JsonProperty("title")
-    @ColumnInfo(name = "title")  val title: String,
+    @ColumnInfo(name = "title") val title: String,
 
     @JsonProperty("subtitle")
-    @ColumnInfo(name = "subtitle")  val subtitle: String?,
+    @ColumnInfo(name = "subtitle") val subtitle: String?,
 
     @JsonProperty("path")
-    @ColumnInfo(name = "path") val path: String?
+    @ColumnInfo(name = "path") val path: String?,
 )

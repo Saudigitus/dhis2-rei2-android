@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +33,8 @@ import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 fun SimpleCard(
     title: String,
     icon: androidx.compose.ui.graphics.vector.ImageVector,
-    onClick: () -> Unit) {
+    onClick: () -> Unit,
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,30 +45,30 @@ fun SimpleCard(
         shape = RoundedCornerShape(Radius.XS),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(50.dp),
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Column (
-                modifier = Modifier.
-                width(220.dp),
+            Column(
+                modifier = Modifier
+                    .width(220.dp),
                 horizontalAlignment = Alignment.Start,
             ) {
                 Text(
                     text = title,
                     fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis,
-                    color = Blue700
+                    color = Blue700,
                 )
             }
             Icon(
                 imageVector = icon,
                 contentDescription = title,
-                tint = Color.Black
+                tint = Color.Black,
             )
         }
     }

@@ -1,7 +1,6 @@
 package com.saudigitus.support_module.di
 
 import android.app.Application
-import androidx.compose.ui.res.stringResource
 import androidx.room.Room
 import com.saudigitus.support_module.R
 import com.saudigitus.support_module.data.local.ManualsRepository
@@ -15,7 +14,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.hisp.dhis.android.core.D2
-import org.hisp.dhis.android.core.D2Manager
 import javax.inject.Singleton
 
 @Module
@@ -27,7 +25,7 @@ object AppModule {
         Room.databaseBuilder(
             app,
             AppDatabase::class.java,
-            AppDatabase.DB_NAME
+            AppDatabase.DB_NAME,
         ).build()
 
     /**
@@ -45,5 +43,4 @@ object AppModule {
     @Singleton fun providesSyncErrorsRepository(app: Application, d2: D2): SyncErrorsRepository {
         return SyncErrorsRepositoryImpl(errorMapper = ErrorModelMapper(fkMessage = app.getString(R.string.fk_message)), d2 = d2)
     }
-
 }

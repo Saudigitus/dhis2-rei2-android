@@ -33,7 +33,7 @@ fun TeiListCardBox(
             maxLines = 1,
             fontWeight = FontWeight.Bold,
             color = color,
-            text = text
+            text = text,
         )
     }
 }

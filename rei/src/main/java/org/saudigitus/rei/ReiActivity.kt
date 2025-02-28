@@ -6,6 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.snackbar.Snackbar
@@ -15,12 +17,12 @@ import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.ui.theme.Dhis2Theme
 import org.saudigitus.rei.navigator.ReiNavigator
 import org.saudigitus.rei.ui.HomeScreen
-import org.saudigitus.rei.ui.stages.StageViewModel
+import org.saudigitus.rei.ui.HomeViewModel
 
 @AndroidEntryPoint
 class ReiActivity : FragmentActivity() {
 
-    private val viewModel: StageViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +31,16 @@ class ReiActivity : FragmentActivity() {
         setContent {
             Dhis2Theme {
                 viewModel.setBundle(intent?.extras)
+                val uiState by viewModel.uiState.collectAsState()
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     HomeScreen(
-                        context = this@ReiActivity,
+                        activity = this@ReiActivity,
+                        uiState = uiState,
                         onSync = ::syncProgram,
                         onNext = ::launchLineListing,
+                        loadStageData = viewModel::loadStageData,
+                        onTeiClick = ::navToTeiDashboard,
                     ) {
                         finish()
                     }
@@ -63,5 +69,17 @@ class ReiActivity : FragmentActivity() {
             activity = this@ReiActivity,
             intent?.extras!!,
         ).navigateToLineListing()
+    }
+
+    private fun navToTeiDashboard(
+        teiUid: String?,
+        enrollmentUid: String?,
+    ) {
+        ReiNavigator(this@ReiActivity)
+            .navigateToTeiDashboard(
+                teiUid,
+                viewModel.program.value,
+                enrollmentUid,
+            )
     }
 }

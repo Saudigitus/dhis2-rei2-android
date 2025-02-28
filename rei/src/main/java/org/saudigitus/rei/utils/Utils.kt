@@ -1,7 +1,6 @@
 package org.saudigitus.rei.utils
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.hisp.dhis.android.core.D2
 import org.saudigitus.rei.utils.ObjectMapper.translateJsonToObject
 
 object Utils {

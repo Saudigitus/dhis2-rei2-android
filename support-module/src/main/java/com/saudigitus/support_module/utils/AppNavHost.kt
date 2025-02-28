@@ -10,7 +10,6 @@ import com.saudigitus.support_module.ui.Screen
 import com.saudigitus.support_module.ui.manualScreen.GeneralReportScreen
 import com.saudigitus.support_module.ui.manualScreen.ManualScreen
 import com.saudigitus.support_module.ui.manualScreen.PdfViewer
-import timber.log.Timber
 import java.io.File
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -54,4 +53,3 @@ fun AppNavHost(navController: NavHostController, route: String, activity: Activi
         }
     }
 }
-

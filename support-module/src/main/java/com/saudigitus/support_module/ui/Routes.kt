@@ -7,7 +7,4 @@ sealed class Screen(val route: String) {
     object ViewPdf : Screen("pdf_view/{path}")
     object SyncErrors : Screen("sync_errors")
     object GeneralErrors : Screen("general_errors")
-
 }
-
-

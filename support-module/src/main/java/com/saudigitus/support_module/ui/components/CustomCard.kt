@@ -16,7 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,18 +39,18 @@ fun CustomCard(imageResId: Int, title: String, onClick: () -> Unit) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Image(
                 painter = painterResource(id = imageResId), // Substitua 'your_image' pelo nome do seu arquivo
                 contentDescription = null,
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier.size(60.dp),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = title,
                 color = Blue700,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
         }
     }

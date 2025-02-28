@@ -46,11 +46,15 @@ kotlin {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(project(":commons"))
+    implementation(project(":ui-components"))
     implementation(project(":support-module"))
+    implementation(project(":dhis_android_analytics"))
     implementation(libs.dagger.hilt.android)
     implementation(libs.androidx.compose.lifecycle)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.material3.android)
 
     kapt(libs.dagger.compiler)

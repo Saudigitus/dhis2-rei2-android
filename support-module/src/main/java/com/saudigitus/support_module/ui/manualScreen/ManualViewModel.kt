@@ -23,8 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ManualViewModel @Inject internal constructor(
     private val manualsRepository: ManualsRepository,
-    @ApplicationContext private val context: Context
-)  : ViewModel() {
+    @ApplicationContext private val context: Context,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ManualsUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -32,18 +32,20 @@ class ManualViewModel @Inject internal constructor(
         getManualsFromDataStore()
     }
 
-    private val _pdfVerticalReaderState = MutableStateFlow( VerticalPdfReaderState(
-        resource = ResourceType.Local(Uri.parse("")),
-        isZoomEnable = true
-    ))
+    private val _pdfVerticalReaderState = MutableStateFlow(
+        VerticalPdfReaderState(
+            resource = ResourceType.Local(Uri.parse("")),
+            isZoomEnable = true,
+        ),
+    )
     val pdfVerticalReaderState = _pdfVerticalReaderState.asStateFlow()
 
-    private fun getManualsFromDataStore(){
+    private fun getManualsFromDataStore() {
         viewModelScope.launch {
-            _uiState.update {it.copy(isDownloading = true)}
-            manualsRepository.getManualsDataStore().collect{ manuals ->
+            _uiState.update { it.copy(isDownloading = true) }
+            manualsRepository.getManualsDataStore().collect { manuals ->
                 manuals.forEach {
-                    manualsRepository.downloadManualToLocal(context = context, url= it.path ?: "", fileName = it.uid)
+                    manualsRepository.downloadManualToLocal(context = context, url = it.path ?: "", fileName = it.uid)
                 }
                 _uiState.update {
                     it.copy(manualItems = manuals, isDownloading = false)
@@ -52,17 +54,17 @@ class ManualViewModel @Inject internal constructor(
         }
     }
 
-    fun openPdf(file: File){
-            _pdfVerticalReaderState.value = VerticalPdfReaderState(
-                resource = ResourceType.Local(Uri.fromFile(file)),
-                isZoomEnable = true
-            )
-        _uiState.update {it.copy(hasFileLoaded = true)}
+    fun openPdf(file: File) {
+        _pdfVerticalReaderState.value = VerticalPdfReaderState(
+            resource = ResourceType.Local(Uri.fromFile(file)),
+            isZoomEnable = true,
+        )
+        _uiState.update { it.copy(hasFileLoaded = true) }
     }
 
-    fun open(context: Context, fileName: String): File  {
+    fun open(context: Context, fileName: String): File {
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "$fileName.pdf")
-        if (!file.exists()){
+        if (!file.exists()) {
             Toast.makeText(context, NO_MANUAL_MESSAGE, Toast.LENGTH_SHORT).show()
         }
         return file

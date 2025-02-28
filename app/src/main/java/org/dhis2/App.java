@@ -48,6 +48,7 @@ import org.dhis2.usescases.login.LoginComponent;
 import org.dhis2.usescases.login.LoginModule;
 import org.dhis2.usescases.searchTrackEntity.SearchTEActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardComponent;
+import org.dhis2.usescases.teiDashboard.TeiDashboardMobileActivity;
 import org.dhis2.usescases.teiDashboard.TeiDashboardModule;
 import org.dhis2.utils.analytics.AnalyticsModule;
 import org.dhis2.utils.granularsync.SyncStatusDialogProvider;
@@ -58,6 +59,7 @@ import org.hisp.dhis.android.core.D2Manager;
 import org.hisp.dhis.android.core.datastore.KeyValuePair;
 import org.jetbrains.annotations.NotNull;
 import org.saudigitus.rei.navigator.LineListingComponentProvider;
+import org.saudigitus.rei.navigator.TeiDashboardComponentProvider;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -403,6 +405,12 @@ public class App extends MultiDexApplication implements Components, LifecycleObs
     @Override
     public LineListingComponentProvider getLineListing() {
         return new SearchTEActivity();
+    }
+
+    @NonNull
+    @Override
+    public TeiDashboardComponentProvider getTeiDashboard() {
+        return new TeiDashboardMobileActivity();
     }
 
     private boolean areTrackingPermissionGranted() {
