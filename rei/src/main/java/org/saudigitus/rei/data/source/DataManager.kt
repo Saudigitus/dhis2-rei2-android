@@ -2,6 +2,7 @@ package org.saudigitus.rei.data.source
 
 import androidx.compose.ui.graphics.Color
 import org.saudigitus.rei.data.model.AppConfigItem
+import org.saudigitus.rei.data.model.ExcludedItem
 import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.model.Stage
 
@@ -21,5 +22,6 @@ interface DataManager {
     suspend fun getStageEventData(
         program: String,
         stage: String,
+        excludedStages: List<ExcludedItem> = emptyList()
     ): List<Triple<String, String, Color>>
 }

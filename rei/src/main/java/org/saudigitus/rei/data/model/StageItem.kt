@@ -11,4 +11,6 @@ data class StageItem(
     val label: String,
     @JsonProperty("pos")
     val pos: Int,
+    @JsonProperty("excludeFrom")
+    val excludeFrom: List<ExcludedItem> = emptyList()
 )

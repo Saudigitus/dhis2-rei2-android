@@ -1,6 +1,7 @@
 package org.saudigitus.rei.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
+import org.saudigitus.rei.data.model.ExcludedItem
 import org.saudigitus.rei.data.source.DataManager
 import org.saudigitus.rei.ui.components.StageTabState
 import org.saudigitus.rei.ui.components.ToolbarHeaders
@@ -57,6 +59,7 @@ class HomeViewModel @Inject constructor(
                         stagesData = repository.getStageEventData(
                             program.value,
                             stages.firstOrNull()?.uid ?: "",
+                            excludedStages(stages.firstOrNull()?.uid ?: "")
                         ),
                     ),
                     teis = if (stages.isNotEmpty()) {
@@ -93,7 +96,9 @@ class HomeViewModel @Inject constructor(
                 it.copy(
                     stageTabState = StageTabState(
                         stages = stageState?.stages ?: emptyList(),
-                        stagesData = repository.getStageEventData(program.value, stage),
+                        stagesData = repository.getStageEventData(
+                            program.value, stage, excludedStages(stage)
+                        ),
                     ),
                     teis = if (stageState?.stages?.isNotEmpty() == true) {
                         repository.getTeis(
@@ -105,5 +110,11 @@ class HomeViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun excludedStages(stage: String): List<ExcludedItem> {
+        return viewModelState.value.config?.stageItems?.mapNotNull {
+            it.excludeFrom.find { removedStage -> removedStage.stage == stage  }
+        } ?: emptyList()
     }
 }

@@ -15,9 +15,11 @@ import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
+import org.saudigitus.rei.data.model.ExcludedItem
 import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.model.Stage
 import org.saudigitus.rei.data.source.DataManager
+import org.saudigitus.rei.utils.Constants
 import org.saudigitus.rei.utils.countEventsByStatusToday
 import org.saudigitus.rei.utils.overdueEventCount
 import org.saudigitus.rei.utils.reiModuleDatastore
@@ -78,7 +80,8 @@ class DataManagerImpl
     override suspend fun getStageEventData(
         program: String,
         stage: String,
-    ) = withContext(Dispatchers.IO) {
+        excludedStages: List<ExcludedItem>
+    ): List<Triple<String, String, Color>> = withContext(Dispatchers.IO) {
         val (scheduledCount, completedCount, overdueCount) = awaitAll(
             async { d2.countEventsByStatusToday(program, stage, EventStatus.SCHEDULE) },
             async { d2.countEventsByStatusToday(program, stage, EventStatus.COMPLETED) },
@@ -88,11 +91,21 @@ class DataManagerImpl
         val stageStatus = loadConfig().find { it.program == program }?.stageItems
             ?.sortedBy { it.pos } ?: emptyList()
 
-        return@withContext listOf(
-            Triple("$scheduledCount", stageStatus[0].label, Color(resourceManager.getColorFrom(stageStatus[0].color))),
-            Triple("$completedCount", stageStatus[1].label, Color(resourceManager.getColorFrom(stageStatus[1].color))),
-            Triple("$overdueCount", stageStatus[2].label, Color(resourceManager.getColorFrom(stageStatus[2].color))),
+        val lineList = mutableListOf(
+            Pair(Constants.SCHEDULED, Triple("$scheduledCount", stageStatus[0].label, Color(resourceManager.getColorFrom(stageStatus[0].color)))),
+            Pair(Constants.COMPLETED, Triple("$completedCount", stageStatus[1].label, Color(resourceManager.getColorFrom(stageStatus[1].color)))),
+            Pair(Constants.FAULTY, Triple("$overdueCount", stageStatus[2].label, Color(resourceManager.getColorFrom(stageStatus[2].color)))),
         )
+
+        val result = lineList.mapNotNull { data ->
+            val removedStages = excludedStages.find { it.stage == stage && it.key.uppercase() == data.first }
+
+            if (removedStages?.key?.uppercase() != data.first)
+                data.second
+            else null
+        }
+
+        return@withContext result
     }
 
     private fun transform(
