@@ -9,4 +9,6 @@ data class Stage(
     val uid: String,
     @JsonProperty("displayName")
     val displayName: String?,
+    @JsonProperty("description")
+    val description: String?
 )

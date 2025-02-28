@@ -6,10 +6,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import org.dhis2.commons.sync.SyncContext
@@ -31,7 +31,7 @@ class ReiActivity : FragmentActivity() {
         setContent {
             Dhis2Theme {
                 viewModel.setBundle(intent?.extras)
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                val uiState by viewModel.uiState.collectAsState()
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     HomeScreen(

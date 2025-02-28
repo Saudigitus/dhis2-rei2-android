@@ -41,10 +41,12 @@ class DataManagerImpl
         return@withContext d2.programModule().programStages()
             .byProgramUid().eq(program)
             .blockingGet()
+            .sortedBy { it.sortOrder() }
             .map {
                 Stage(
                     uid = it.uid(),
                     displayName = it.displayName(),
+                    description = it.description(),
                 )
             }
     }

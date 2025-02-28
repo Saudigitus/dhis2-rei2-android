@@ -41,11 +41,6 @@ class HomeViewModel @Inject constructor(
             viewModelState.update {
                 it.copy(
                     teiCardMapper = teiCardMapper,
-                    teis = repository.getTeis(
-                        program = "poORjulSx9q",
-                        stage = "ZdFBmeA8aqp",
-                        eventDate = null,
-                    ),
                 )
             }
         }
@@ -64,6 +59,13 @@ class HomeViewModel @Inject constructor(
                             stages.firstOrNull()?.uid ?: "",
                         ),
                     ),
+                    teis = if (stages.isNotEmpty()) {
+                        repository.getTeis(
+                            program = program.value,
+                            stage = stages[0].uid,
+                            eventDate = null,
+                        )
+                    } else emptyList(),
                 )
             }
         }
@@ -93,6 +95,13 @@ class HomeViewModel @Inject constructor(
                         stages = stageState?.stages ?: emptyList(),
                         stagesData = repository.getStageEventData(program.value, stage),
                     ),
+                    teis = if (stageState?.stages?.isNotEmpty() == true) {
+                        repository.getTeis(
+                            program = program.value,
+                            stage = stage,
+                            eventDate = null,
+                        )
+                    } else emptyList(),
                 )
             }
         }
