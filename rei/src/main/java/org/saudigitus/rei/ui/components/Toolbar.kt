@@ -103,6 +103,7 @@ fun Toolbar(
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
     syncAction: () -> Unit = {},
     filterAction: () -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
 ) {
     TopAppBar(
         title = {
@@ -164,6 +165,8 @@ fun Toolbar(
                     )
                 }
             }
+
+            actions.invoke(this)
         },
         colors = colors,
     )
