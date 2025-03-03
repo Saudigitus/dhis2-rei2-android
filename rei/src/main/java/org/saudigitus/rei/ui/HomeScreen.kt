@@ -11,12 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -34,8 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
@@ -49,8 +46,10 @@ import org.saudigitus.rei.R
 import org.saudigitus.rei.data.model.AppConfigItem
 import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.ui.components.HelpDialog
+import org.saudigitus.rei.ui.components.LoadingContent
 import org.saudigitus.rei.ui.components.NavBar
 import org.saudigitus.rei.ui.components.NavigationItem
+import org.saudigitus.rei.ui.components.NoResults
 import org.saudigitus.rei.ui.components.StageTab
 import org.saudigitus.rei.ui.components.StageTabState
 import org.saudigitus.rei.ui.components.Toolbar
@@ -62,6 +61,8 @@ import org.saudigitus.rei.utils.map
 
 @Stable
 data class HomeUIState(
+    val isLoading: Boolean = false,
+    val isLoadingSection2: Boolean = false,
     val toolbarHeaders: ToolbarHeaders = ToolbarHeaders(""),
     val stageTabState: StageTabState? = null,
     val config: AppConfigItem? = null,
@@ -76,7 +77,6 @@ fun HomeScreen(
     activity: FragmentActivity,
     uiState: HomeUIState,
     onSync: () -> Unit,
-    onNext: () -> Unit,
     loadStageData: (stage: String) -> Unit,
     onTeiClick: (tei: String, enrollment: String) -> Unit,
     onStageItem: (stage: String, eventStatus: EventStatus) -> Unit,
@@ -167,23 +167,31 @@ fun HomeUI(
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
         horizontalAlignment = Alignment.Start,
     ) {
-        if (uiState.config?.defaults?.displayStages == true && uiState.stageTabState != null) {
-            StageTab(
-                modifier = Modifier.fillMaxWidth(),
-                state = uiState.stageTabState,
-                onAction = onAction,
-                onStageItem = onStageItem
-            )
-        }
+        if (!uiState.isLoading) {
+            if (uiState.config?.defaults?.displayStages == true && uiState.stageTabState != null) {
+                StageTab(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = uiState.stageTabState,
+                    onAction = onAction,
+                    onStageItem = onStageItem
+                )
+            }
 
-        Spacer(modifier = Modifier.size(12.dp))
+            Spacer(modifier = Modifier.size(12.dp))
 
-        uiState.teiCardMapper?.let { cardMapper ->
-            TEIList(
-                teiCardMapper = cardMapper,
-                students = uiState.teis,
-                onCardClick = onTeiClick,
-            )
+            if (!uiState.isLoadingSection2) {
+                uiState.teiCardMapper?.let { cardMapper ->
+                    TEIList(
+                        teiCardMapper = cardMapper,
+                        teis = uiState.teis,
+                        onCardClick = onTeiClick,
+                    )
+                }
+            } else {
+                LoadingContent()
+            }
+        } else {
+            LoadingContent()
         }
     }
 }
@@ -192,7 +200,7 @@ fun HomeUI(
 @Composable
 private fun TEIList(
     teiCardMapper: TEICardMapper,
-    students: List<SearchTeiModel>,
+    teis: List<SearchTeiModel>,
     onCardClick: (String, String) -> Unit = { _, _ -> },
 ) {
     Text(
@@ -201,26 +209,31 @@ private fun TEIList(
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         color = Color.Black.copy(.5f),
+        fontFamily = FontFamily(Font(R.font.rubik_regular)),
     )
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-    ) {
-        items(students) { student ->
-            val card = student.map(teiCardMapper, onCardClick = onCardClick)
+    if (teis.isNotEmpty()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+        ) {
+            items(teis) { student ->
+                val card = student.map(teiCardMapper, onCardClick = onCardClick)
 
-            ListCard(
-                modifier = Modifier.testTag("TEI_ITEM"),
-                listAvatar = card.avatar,
-                title = ListCardTitleModel(text = card.title),
-                lastUpdated = card.lastUpdated,
-                additionalInfoList = card.additionalInfo,
-                actionButton = card.actionButton,
-                expandLabelText = card.expandLabelText,
-                shrinkLabelText = card.shrinkLabelText,
-                onCardClick = card.onCardCLick,
-            )
+                ListCard(
+                    modifier = Modifier.testTag("TEI_ITEM"),
+                    listAvatar = card.avatar,
+                    title = ListCardTitleModel(text = card.title),
+                    lastUpdated = card.lastUpdated,
+                    additionalInfoList = card.additionalInfo,
+                    actionButton = card.actionButton,
+                    expandLabelText = card.expandLabelText,
+                    shrinkLabelText = card.shrinkLabelText,
+                    onCardClick = card.onCardCLick,
+                )
+            }
         }
+    } else {
+        NoResults()
     }
 }

@@ -64,6 +64,7 @@ fun Toolbar(
                     overflow = TextOverflow.Ellipsis,
                     softWrap = true,
                     fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
                 )
                 headers.subtitle?.let { subtitle ->
                     Text(
@@ -72,6 +73,7 @@ fun Toolbar(
                         fontSize = 12.sp,
                         overflow = TextOverflow.Ellipsis,
                         softWrap = true,
+                        fontFamily = FontFamily(Font(R.font.rubik_regular)),
                     )
                 }
             }

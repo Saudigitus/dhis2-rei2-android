@@ -23,10 +23,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.saudigitus.rei.R
 import org.saudigitus.rei.data.model.Quadruple
 import org.saudigitus.rei.data.model.Stage
 
@@ -79,6 +82,7 @@ fun StageTab(
                                 maxLines = 1,
                                 softWrap = true,
                                 overflow = TextOverflow.Ellipsis,
+                                fontFamily = FontFamily(Font(R.font.rubik_regular)),
                             )
                         },
                     )

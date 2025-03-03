@@ -38,7 +38,6 @@ class ReiActivity : FragmentActivity() {
                         activity = this@ReiActivity,
                         uiState = uiState,
                         onSync = ::syncProgram,
-                        onNext = ::launchLineListing,
                         loadStageData = viewModel::loadStageData,
                         onTeiClick = ::navToTeiDashboard,
                         onStageItem = viewModel::loadTEI
