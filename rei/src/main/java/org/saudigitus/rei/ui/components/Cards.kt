@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
 import org.saudigitus.rei.utils.HardcodeData
@@ -32,10 +34,12 @@ data class HomeStageCardState(
     val bottomColor: Color,
 )
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeStageCard(
     modifier: Modifier,
     state: HomeStageCardState,
+    onClick: () -> Unit = {},
 ) {
     Card(
         modifier = Modifier
@@ -43,6 +47,7 @@ fun HomeStageCard(
             .then(modifier),
         shape = RoundedCornerShape(Radius.XS),
         backgroundColor = state.bottomColor,
+        onClick = onClick::invoke
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),

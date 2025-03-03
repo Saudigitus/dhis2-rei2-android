@@ -25,13 +25,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.theme.SurfaceColor
+import org.saudigitus.rei.data.model.Quadruple
 import org.saudigitus.rei.data.model.Stage
 
 @Stable
 data class StageTabState(
     val stages: List<Stage> = emptyList(),
-    val stagesData: List<Triple<String, String, Color>> = emptyList(),
+    val stagesData: List<Quadruple<String, String, Color, EventStatus>> = emptyList(),
 )
 
 @Composable
@@ -39,6 +41,7 @@ fun StageTab(
     modifier: Modifier = Modifier,
     state: StageTabState = StageTabState(),
     onAction: (uid: String) -> Unit,
+    onStageItem: (stage: String, eventStatus: EventStatus) -> Unit,
 ) {
     var tabState by remember { mutableIntStateOf(0) }
 
@@ -98,6 +101,7 @@ fun StageTab(
                             subtitle = it.second,
                             bottomColor = it.third,
                         ),
+                        onClick = { onStageItem(state.stages[tabState].uid, it.fourth) }
                     )
                 }
             }

@@ -37,6 +37,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCard
 import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.saudigitus.rei.R
@@ -72,6 +73,7 @@ fun HomeScreen(
     onNext: () -> Unit,
     loadStageData: (stage: String) -> Unit,
     onTeiClick: (tei: String, enrollment: String) -> Unit,
+    onStageItem: (stage: String, eventStatus: EventStatus) -> Unit,
     onBack: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -138,6 +140,7 @@ fun HomeScreen(
                     uiState = uiState,
                     onAction = loadStageData,
                     onTeiClick = onTeiClick,
+                    onStageItem = onStageItem,
                 )
             }
             composable(NavigationItem.ANALYTICS.name) {
@@ -158,6 +161,7 @@ fun HomeUI(
     uiState: HomeUIState,
     onAction: (uid: String) -> Unit,
     onTeiClick: (tei: String, enrollment: String) -> Unit,
+    onStageItem: (stage: String, eventStatus: EventStatus) -> Unit
 ) {
     Column(
         modifier = modifier,
@@ -169,6 +173,7 @@ fun HomeUI(
                 modifier = Modifier.fillMaxWidth(),
                 state = uiState.stageTabState,
                 onAction = onAction,
+                onStageItem = onStageItem
             )
         }
 

@@ -41,6 +41,7 @@ class ReiActivity : FragmentActivity() {
                         onNext = ::launchLineListing,
                         loadStageData = viewModel::loadStageData,
                         onTeiClick = ::navToTeiDashboard,
+                        onStageItem = viewModel::loadTEI
                     ) {
                         finish()
                     }
