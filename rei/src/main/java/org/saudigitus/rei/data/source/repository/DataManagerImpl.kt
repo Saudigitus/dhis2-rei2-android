@@ -6,22 +6,26 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import org.dhis2.bindings.userFriendlyValue
+import org.dhis2.commons.date.DateUtils
 import org.dhis2.commons.network.NetworkUtils
 import org.dhis2.commons.resources.ResourceManager
 import org.hisp.dhis.android.core.D2
 import org.hisp.dhis.android.core.arch.repositories.scope.RepositoryScope
 import org.hisp.dhis.android.core.enrollment.EnrollmentStatus
 import org.hisp.dhis.android.core.event.EventStatus
+import org.hisp.dhis.android.core.period.DatePeriod
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttribute
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityAttributeValue
 import org.hisp.dhis.android.core.trackedentity.TrackedEntityInstance
 import org.saudigitus.rei.data.model.ExcludedItem
+import org.saudigitus.rei.data.model.Quadruple
 import org.saudigitus.rei.data.model.SearchTeiModel
 import org.saudigitus.rei.data.model.Stage
 import org.saudigitus.rei.data.source.DataManager
 import org.saudigitus.rei.utils.Constants
 import org.saudigitus.rei.utils.countEventsByStatusToday
 import org.saudigitus.rei.utils.overdueEventCount
+import org.saudigitus.rei.utils.overdueTEIS
 import org.saudigitus.rei.utils.reiModuleDatastore
 import javax.inject.Inject
 
@@ -56,21 +60,31 @@ class DataManagerImpl
     override suspend fun getTeis(
         program: String,
         stage: String?,
-        eventDate: String?,
-    ) = withContext(Dispatchers.IO) {
+        eventStatus: EventStatus
+    ): List<SearchTeiModel> = withContext(Dispatchers.IO) {
         val repository = d2.trackedEntityModule().trackedEntityInstanceQuery()
 
-        return@withContext if (networkUtils.isOnline()) {
+        return@withContext if (networkUtils.isOnline() && eventStatus != EventStatus.OVERDUE) {
             repository.offlineFirst().allowOnlineCache().eq(true)
                 .byProgram().eq(program)
                 .byProgramStage().eq("$stage")
+                .byEventDate().inDatePeriod(DatePeriod.create(DateUtils.getInstance().today, DateUtils.getInstance().today))
+                .byEventStatus().eq(eventStatus)
+                .blockingGet()
+                .flatMap { tei -> listOf(tei) }
+                .map { tei -> transform(tei, program) }
+        } else if (eventStatus != EventStatus.OVERDUE) {
+            repository.offlineOnly().allowOnlineCache().eq(false)
+                .byProgram().eq(program)
+                .byProgramStage().eq("$stage")
+                .byEventDate().inDatePeriod(DatePeriod.create(DateUtils.getInstance().today, DateUtils.getInstance().today))
+                .byEventStatus().eq(eventStatus)
                 .blockingGet()
                 .flatMap { tei -> listOf(tei) }
                 .map { tei -> transform(tei, program) }
         } else {
-            repository.offlineOnly().allowOnlineCache().eq(false)
-                .byProgram().eq(program)
-                .byProgramStage().eq("$stage")
+            repository.offlineFirst().allowOnlineCache().eq(true)
+                .byTrackedEntities().`in`(d2.overdueTEIS(program, "$stage"))
                 .blockingGet()
                 .flatMap { tei -> listOf(tei) }
                 .map { tei -> transform(tei, program) }
@@ -81,7 +95,7 @@ class DataManagerImpl
         program: String,
         stage: String,
         excludedStages: List<ExcludedItem>
-    ): List<Triple<String, String, Color>> = withContext(Dispatchers.IO) {
+    ): List<Quadruple<String, String, Color, EventStatus>> = withContext(Dispatchers.IO) {
         val (scheduledCount, completedCount, overdueCount) = awaitAll(
             async { d2.countEventsByStatusToday(program, stage, EventStatus.SCHEDULE) },
             async { d2.countEventsByStatusToday(program, stage, EventStatus.COMPLETED) },
@@ -92,9 +106,9 @@ class DataManagerImpl
             ?.sortedBy { it.pos } ?: emptyList()
 
         val lineList = mutableListOf(
-            Pair(Constants.SCHEDULED, Triple("$scheduledCount", stageStatus[0].label, Color(resourceManager.getColorFrom(stageStatus[0].color)))),
-            Pair(Constants.COMPLETED, Triple("$completedCount", stageStatus[1].label, Color(resourceManager.getColorFrom(stageStatus[1].color)))),
-            Pair(Constants.FAULTY, Triple("$overdueCount", stageStatus[2].label, Color(resourceManager.getColorFrom(stageStatus[2].color)))),
+            Pair(Constants.SCHEDULED, Quadruple("$scheduledCount", stageStatus[0].label, Color(resourceManager.getColorFrom(stageStatus[0].color)), EventStatus.SCHEDULE)),
+            Pair(Constants.COMPLETED, Quadruple("$completedCount", stageStatus[1].label, Color(resourceManager.getColorFrom(stageStatus[1].color)), EventStatus.COMPLETED)),
+            Pair(Constants.FAULTY, Quadruple("$overdueCount", stageStatus[2].label, Color(resourceManager.getColorFrom(stageStatus[2].color)), EventStatus.OVERDUE)),
         )
 
         val result = lineList.mapNotNull { data ->

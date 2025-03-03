@@ -41,6 +41,23 @@ fun D2.overdueEventCount(
     .byDueDate().before(DateUtils.getInstance().today)
     .blockingCount()
 
+fun D2.overdueTEIS(
+    program: String,
+    stage: String,
+) = enrollmentModule()
+    .enrollments()
+    .byUid().`in`(
+        eventModule().events()
+            .byProgramUid().eq(program)
+            .byProgramStageUid().eq(stage)
+            .byDueDate().before(DateUtils.getInstance().today)
+            .blockingGet()
+            .mapNotNull {
+                it.enrollment()
+            }
+    ).blockingGet()
+    .mapNotNull { it.trackedEntityInstance() }
+
 fun D2.eventOrderedByDateDesc(enrollment: String) = eventModule().events()
     .byEnrollmentUid().eq(enrollment)
     .orderByEventDate(RepositoryScope.OrderByDirection.DESC)

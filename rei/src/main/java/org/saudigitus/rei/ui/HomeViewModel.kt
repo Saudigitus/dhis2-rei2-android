@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
+import org.hisp.dhis.android.core.event.EventStatus
 import org.saudigitus.rei.data.model.ExcludedItem
 import org.saudigitus.rei.data.source.DataManager
 import org.saudigitus.rei.ui.components.StageTabState
@@ -66,7 +67,6 @@ class HomeViewModel @Inject constructor(
                         repository.getTeis(
                             program = program.value,
                             stage = stages[0].uid,
-                            eventDate = null,
                         )
                     } else emptyList(),
                 )
@@ -104,7 +104,25 @@ class HomeViewModel @Inject constructor(
                         repository.getTeis(
                             program = program.value,
                             stage = stage,
-                            eventDate = null,
+                        )
+                    } else emptyList(),
+                )
+            }
+        }
+    }
+
+    fun loadTEI(stage: String, eventStatus: EventStatus) {
+        viewModelScope.launch {
+            val stageState = viewModelState.value.stageTabState
+
+            viewModelState.update {
+                it.copy(
+
+                    teis = if (stageState?.stages?.isNotEmpty() == true) {
+                        repository.getTeis(
+                            program = program.value,
+                            stage = stage,
+                            eventStatus = eventStatus
                         )
                     } else emptyList(),
                 )
