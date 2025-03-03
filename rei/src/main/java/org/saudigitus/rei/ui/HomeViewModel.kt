@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -43,6 +44,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             viewModelState.update {
                 it.copy(
+                    isLoading = true,
                     teiCardMapper = teiCardMapper,
                 )
             }
@@ -52,22 +54,32 @@ class HomeViewModel @Inject constructor(
     private fun loadStages() {
         viewModelScope.launch {
             val stages = repository.getStages(program.value)
+            val excludedStagesAsyc = async { excludedStages(stages.firstOrNull()?.uid ?: "") }
+            val teisAsyc = async {
+                repository.getTeis(
+                    program = program.value,
+                    stage = stages[0].uid,
+                )
+            }
+
+            val excludedStages = excludedStagesAsyc.await()
+            val teis = teisAsyc.await()
+
+            val isLoading = !(excludedStagesAsyc.isCompleted && teisAsyc.isCompleted)
 
             viewModelState.update {
                 it.copy(
+                    isLoading = isLoading,
                     stageTabState = StageTabState(
                         stages = stages,
                         stagesData = repository.getStageEventData(
                             program.value,
                             stages.firstOrNull()?.uid ?: "",
-                            excludedStages(stages.firstOrNull()?.uid ?: "")
+                            excludedStages
                         ),
                     ),
                     teis = if (stages.isNotEmpty()) {
-                        repository.getTeis(
-                            program = program.value,
-                            stage = stages[0].uid,
-                        )
+                        teis
                     } else emptyList(),
                 )
             }
@@ -113,17 +125,24 @@ class HomeViewModel @Inject constructor(
 
     fun loadTEI(stage: String, eventStatus: EventStatus) {
         viewModelScope.launch {
+            viewModelState.update { it.copy(isLoadingSection2 = true) }
             val stageState = viewModelState.value.stageTabState
+
+            val teisAsyc = async {
+                repository.getTeis(
+                    program = program.value,
+                    stage = stage,
+                    eventStatus = eventStatus
+                )
+            }
+
+            val teis = teisAsyc.await()
 
             viewModelState.update {
                 it.copy(
-
+                    isLoadingSection2 = !teisAsyc.isCompleted,
                     teis = if (stageState?.stages?.isNotEmpty() == true) {
-                        repository.getTeis(
-                            program = program.value,
-                            stage = stage,
-                            eventStatus = eventStatus
-                        )
+                        teis
                     } else emptyList(),
                 )
             }

@@ -29,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -64,6 +66,7 @@ fun HelpDialog(onDismissRequest: () -> Unit) {
                         .fillMaxWidth()
                         .wrapContentSize(Alignment.Center),
                     textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
                 )
 
                 LazyColumn(
@@ -86,7 +89,7 @@ fun HelpDialog(onDismissRequest: () -> Unit) {
                         onClick = { onDismissRequest() },
                         modifier = Modifier.fillMaxWidth().padding(8.dp),
                     ) {
-                        Text("Cancelar")
+                        Text("Cancelar", fontFamily = FontFamily(Font(R.font.rubik_regular)),)
                     }
 
                 }
@@ -115,7 +118,8 @@ fun HelpItemComponent(item: HelpItem) {
             Spacer(modifier = Modifier.width(16.dp))
             Text(
                 text = stringResource(item.label),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyLarge,
+                fontFamily = FontFamily(Font(R.font.rubik_regular)),
             )
         }
     }

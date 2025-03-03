@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import org.hisp.dhis.android.core.event.EventStatus
 import org.hisp.dhis.mobile.ui.designsystem.theme.Radius
 import org.hisp.dhis.mobile.ui.designsystem.theme.dropShadow
+import org.saudigitus.rei.R
 import org.saudigitus.rei.utils.HardcodeData
 
 @Stable
@@ -69,6 +72,7 @@ fun HomeStageCard(
                     overflow = TextOverflow.Ellipsis,
                     softWrap = true,
                     maxLines = 1,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
                 )
                 Divider(
                     modifier = Modifier.fillMaxWidth(),
@@ -80,6 +84,7 @@ fun HomeStageCard(
                     overflow = TextOverflow.Ellipsis,
                     softWrap = true,
                     maxLines = 1,
+                    fontFamily = FontFamily(Font(R.font.rubik_regular)),
                 )
             }
         }
