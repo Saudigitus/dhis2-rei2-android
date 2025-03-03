@@ -117,29 +117,6 @@ fun HomeScreen(
                 }
             )
         },
-        floatingActionButton = {
-            if (route == NavigationItem.REI) {
-                ExtendedFloatingActionButton(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.patients),
-                            fontWeight = FontWeight.Bold,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            softWrap = true,
-                        )
-                    },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                            contentDescription = null,
-                        )
-                    },
-                    onClick = onNext::invoke,
-                    contentColor = Color.White,
-                )
-            }
-        },
         bottomBar = {
             NavBar(destination = route.ordinal) {
                 route = when (it) {
