@@ -156,6 +156,7 @@ public class SearchTEModule {
                                       SearchTEIRepository searchTEIRepository,
                                       ThemeManager themeManager,
                                       MetadataIconProvider metadataIconProvider) {
+        ProfilePictureProvider profilePictureProvider = new ProfilePictureProvider(d2);
         return new SearchRepositoryImpl(teiType,
                 initialProgram,
                 d2,
@@ -168,7 +169,8 @@ public class SearchTEModule {
                 networkUtils,
                 searchTEIRepository,
                 themeManager,
-                metadataIconProvider);
+                metadataIconProvider,
+                profilePictureProvider);
     }
 
     @Provides
@@ -179,7 +181,8 @@ public class SearchTEModule {
             DispatcherProvider dispatcherProvider,
             FieldViewModelFactory fieldViewModelFactory,
             MetadataIconProvider metadataIconProvider,
-            ColorUtils colorUtils
+            ColorUtils colorUtils,
+            DateUtils dateUtils
     ) {
         ResourceManager resourceManager = new ResourceManager(moduleContext, colorUtils);
         DateLabelProvider dateLabelProvider = new DateLabelProvider(moduleContext, new ResourceManager(moduleContext, colorUtils));
@@ -202,7 +205,8 @@ public class SearchTEModule {
                         resourceManager,
                         dateLabelProvider,
                         metadataIconProvider,
-                        profilePictureProvider
+                        profilePictureProvider,
+                        dateUtils
                 )
         );
     }
@@ -322,6 +326,13 @@ public class SearchTEModule {
                 displayNameProvider,
                 filterManager
         );
+    }
+
+    @Provides
+    @PerActivity
+    DateUtils provideDateUtils(
+    ) {
+        return DateUtils.getInstance();
     }
 
     @Provides

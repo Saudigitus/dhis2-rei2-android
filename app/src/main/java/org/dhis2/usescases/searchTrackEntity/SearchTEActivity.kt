@@ -464,7 +464,7 @@ class SearchTEActivity :
             currentContent = Content.LIST
             supportFragmentManager.beginTransaction().run {
                 replace(R.id.mainComponent, get(fromRelationship))
-                commit()
+                commitAllowingStateLoss()
             }
             hideToolbarProgressBar()
         }
