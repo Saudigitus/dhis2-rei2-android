@@ -30,6 +30,8 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -604,7 +606,7 @@ fun CreateNewButton(
     val icon = @Composable {
         Icon(
             modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.ic_add_accent),
+            imageVector = Icons.Default.Add,
             contentDescription = "",
             tint = TextColor.OnPrimaryContainer,
         )

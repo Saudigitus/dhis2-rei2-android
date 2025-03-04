@@ -1,5 +1,6 @@
 package org.saudigitus.rei.ui
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -45,6 +47,7 @@ import org.hisp.dhis.mobile.ui.designsystem.component.ListCardTitleModel
 import org.saudigitus.rei.R
 import org.saudigitus.rei.data.model.AppConfigItem
 import org.saudigitus.rei.data.model.SearchTeiModel
+import org.saudigitus.rei.ui.components.CreateNewButton
 import org.saudigitus.rei.ui.components.HelpDialog
 import org.saudigitus.rei.ui.components.LoadingContent
 import org.saudigitus.rei.ui.components.NavBar
@@ -70,7 +73,7 @@ data class HomeUIState(
     val teis: List<SearchTeiModel> = emptyList(),
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -80,6 +83,7 @@ fun HomeScreen(
     loadStageData: (stage: String) -> Unit,
     onTeiClick: (tei: String, enrollment: String) -> Unit,
     onStageItem: (stage: String, eventStatus: EventStatus) -> Unit,
+    onNewEnrollment: (route: String) -> Unit,
     onBack: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -117,6 +121,14 @@ fun HomeScreen(
                 }
             )
         },
+        floatingActionButton = {
+            CreateNewButton(
+                modifier = Modifier,
+                extended = true,
+                onClick = { onNewEnrollment.invoke(HomeRoute.ENROLLMENT_FORM) },
+                teTypeName = "",
+            )
+        },
         bottomBar = {
             NavBar(destination = route.ordinal) {
                 route = when (it) {
@@ -133,7 +145,8 @@ fun HomeScreen(
         ) {
             composable(NavigationItem.REI.name) {
                 HomeUI(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .padding(innerPadding)
                         .then(modifier),
                     uiState = uiState,
@@ -144,7 +157,8 @@ fun HomeScreen(
             }
             composable(NavigationItem.ANALYTICS.name) {
                 AnalyticsScreen(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .padding(innerPadding)
                         .then(modifier),
                     activity = activity,

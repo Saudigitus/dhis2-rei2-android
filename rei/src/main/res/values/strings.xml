@@ -35,4 +35,5 @@
     <string name="sync_dialog_title_sms_syced">SMS sent</string>
     <string name="scheduled_children">Crianças Agendadas</string>
     <string name="help">Help</string>
+    <string name="search_new_te_type">Novo %s</string>
 </resources>

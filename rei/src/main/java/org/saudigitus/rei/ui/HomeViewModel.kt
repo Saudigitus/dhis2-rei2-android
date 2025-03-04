@@ -16,7 +16,9 @@ import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
 import org.hisp.dhis.android.core.event.EventStatus
 import org.saudigitus.rei.data.model.ExcludedItem
+import org.saudigitus.rei.data.model.OU
 import org.saudigitus.rei.data.source.DataManager
+import org.saudigitus.rei.data.source.EnrollmentRepository
 import org.saudigitus.rei.ui.components.StageTabState
 import org.saudigitus.rei.ui.components.ToolbarHeaders
 import org.saudigitus.rei.ui.mapper.TEICardMapper
@@ -25,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: DataManager,
+    private val enrollmentRepository: EnrollmentRepository,
     private val teiCardMapper: TEICardMapper,
 ) : ViewModel() {
 
@@ -40,6 +43,9 @@ class HomeViewModel @Inject constructor(
     private val _program = MutableStateFlow("")
     val program: StateFlow<String> = _program
 
+    private val _newEnrollment = MutableStateFlow("")
+    val newEnrollment: StateFlow<String> = _newEnrollment
+
     init {
         viewModelScope.launch {
             viewModelState.update {
@@ -48,6 +54,13 @@ class HomeViewModel @Inject constructor(
                     teiCardMapper = teiCardMapper,
                 )
             }
+        }
+    }
+
+    fun generateEnrollment(ou: OU) {
+        viewModelScope.launch {
+            _newEnrollment.value = enrollmentRepository
+                .createEnrollment(ou.uid, program.value) ?: ""
         }
     }
 
