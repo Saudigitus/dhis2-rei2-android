@@ -1,6 +1,4 @@
-This is a patch version that fixes:
-- ANDROAPP-6653 Large option sets freeze the app
-- ANDROAPP-6665 Filters persists when exiting the program or data set
-- ANDROAPP-6691 NullPointerException: Dataset table
+This is a hotfix version that fixes:
+- ANDROAPP-6797 Update rule engine to 3.3.2
 
 You can find all the details on Jira and Github.
