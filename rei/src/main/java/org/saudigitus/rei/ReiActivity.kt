@@ -4,11 +4,8 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,7 +16,6 @@ import org.dhis2.commons.locationprovider.LocationProvider
 import org.dhis2.commons.sync.SyncContext
 import org.dhis2.commons.sync.SyncDialog
 import org.dhis2.form.ui.provider.FormResultDialogProvider
-import org.dhis2.ui.theme.Dhis2Theme
 import org.saudigitus.rei.navigator.ReiNavigator
 import org.saudigitus.rei.ui.EnrollmentFormScreen
 import org.saudigitus.rei.ui.HomeRoute
@@ -73,6 +69,10 @@ class ReiActivity : FragmentActivity() {
                                     program = viewModel.program.value,
                                     onOrgUnitSelected = { ou ->
                                         viewModel.generateEnrollment(ou)
+
+                                        if (viewModel.newEnrollment.value.isNotEmpty()) {
+                                            navController.navigate(HomeRoute.ENROLLMENT_FORM)
+                                        }
                                     },
                                 )
                             }
@@ -85,7 +85,7 @@ class ReiActivity : FragmentActivity() {
                              activity = this@ReiActivity,
                              enrollmentResultDialogProvider = enrollmentResultDialogProvider,
                              locationProvider = locationProvider,
-                             enrollmentUid = "",
+                             enrollmentUid = viewModel.newEnrollment.value,
                          ) {
                             navController.navigateUp()
                          }

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
 import org.hisp.dhis.android.core.event.EventStatus
@@ -59,8 +61,14 @@ class HomeViewModel @Inject constructor(
 
     fun generateEnrollment(ou: OU) {
         viewModelScope.launch {
-            _newEnrollment.value = enrollmentRepository
-                .createEnrollment(ou.uid, program.value) ?: ""
+            val uid = async {
+                enrollmentRepository
+                    .createEnrollment(ou.uid, program.value) ?: ""
+            }
+
+            uid.await().let {
+                _newEnrollment.value = it
+            }
         }
     }
 

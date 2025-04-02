@@ -27,7 +27,7 @@ fun EnrollmentFormScreen(
 
         var frameId = 0
         AndroidView(
-            modifier = Modifier.padding(innerPadding   ),
+            modifier = Modifier.padding(innerPadding),
             factory = { context ->
                 FrameLayout(context).apply {
                     id = ViewCompat.generateViewId()
