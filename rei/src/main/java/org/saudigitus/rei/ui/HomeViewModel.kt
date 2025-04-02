@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,11 +13,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.dhis2.commons.Constants
 import org.dhis2.commons.Constants.DATA_SET_NAME
 import org.hisp.dhis.android.core.event.EventStatus
 import org.saudigitus.rei.data.model.ExcludedItem
+import org.saudigitus.rei.data.model.OU
 import org.saudigitus.rei.data.source.DataManager
+import org.saudigitus.rei.data.source.EnrollmentRepository
 import org.saudigitus.rei.ui.components.StageTabState
 import org.saudigitus.rei.ui.components.ToolbarHeaders
 import org.saudigitus.rei.ui.mapper.TEICardMapper
@@ -25,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: DataManager,
+    private val enrollmentRepository: EnrollmentRepository,
     private val teiCardMapper: TEICardMapper,
 ) : ViewModel() {
 
@@ -40,6 +45,9 @@ class HomeViewModel @Inject constructor(
     private val _program = MutableStateFlow("")
     val program: StateFlow<String> = _program
 
+    private val _newEnrollment = MutableStateFlow("")
+    val newEnrollment: StateFlow<String> = _newEnrollment
+
     init {
         viewModelScope.launch {
             viewModelState.update {
@@ -47,6 +55,19 @@ class HomeViewModel @Inject constructor(
                     isLoading = true,
                     teiCardMapper = teiCardMapper,
                 )
+            }
+        }
+    }
+
+    fun generateEnrollment(ou: OU) {
+        viewModelScope.launch {
+            val uid = async {
+                enrollmentRepository
+                    .createEnrollment(ou.uid, program.value) ?: ""
+            }
+
+            uid.await().let {
+                _newEnrollment.value = it
             }
         }
     }
